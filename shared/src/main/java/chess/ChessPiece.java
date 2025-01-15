@@ -106,7 +106,6 @@ public class ChessPiece {
                 moves = PawnMovesCalculator.CalculatePawnMoves(board, myPosition);
                 yield moves;
             }
-            default -> moves;
         };
     }
 
