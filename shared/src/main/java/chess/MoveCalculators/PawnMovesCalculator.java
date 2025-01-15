@@ -1,4 +1,4 @@
-package chess;
+package chess.MoveCalculators;
 
 public class PawnMovesCalculator {
 }

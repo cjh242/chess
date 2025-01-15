@@ -1,5 +1,8 @@
 package chess;
 
+import chess.MoveCalculators.*;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -77,7 +80,25 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> moves = new ArrayList<>();
+        switch (pieceType) {
+            case KING:
+                moves = KingMovesCalculator.CalculateKingMoves(board, myPosition);
+                return moves;
+            case QUEEN:
+                moves = QueenMovesCalculator.CalculateQueenMoves(board, myPosition);
+                return moves;
+            case BISHOP:
+                moves = BishopMovesCalculator.CalculateBishopMoves(board, myPosition);
+                return moves;
+            case KNIGHT:
+                moves = KnightMovesCalculator.CalculateKnightMoves(board, myPosition);
+                return moves;
+            case ROOK:
+                moves = RookMovesCalculator.CalculateRookMoves(board, myPosition);
+                return moves;
+        }
+        return moves;
     }
 
     @Override
