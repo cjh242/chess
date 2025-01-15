@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -18,6 +20,29 @@ public class ChessPiece {
     private ChessGame.TeamColor color;
     private ChessPiece.PieceType pieceType;
 
+
+    private static final Map<PieceType, String> TYPE_TO_CHAR_MAP = Map.of(
+            ChessPiece.PieceType.PAWN, "p",
+            ChessPiece.PieceType.KNIGHT, "n",
+             ChessPiece.PieceType.ROOK, "r",
+            ChessPiece.PieceType.QUEEN, "q",
+             ChessPiece.PieceType.KING, "k",
+             ChessPiece.PieceType.BISHOP, "b");
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return color == that.color && pieceType == that.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, pieceType);
+    }
+
     /**
      * The various different chess piece options
      */
@@ -34,7 +59,6 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-
         return color;
     }
 
@@ -42,7 +66,6 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-
         return pieceType;
     }
 
@@ -55,5 +78,10 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public String toString() {
+        return TYPE_TO_CHAR_MAP.get(pieceType);
     }
 }
