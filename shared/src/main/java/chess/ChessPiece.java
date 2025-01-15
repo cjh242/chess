@@ -20,8 +20,8 @@ public class ChessPiece {
         pieceType = type;
     }
 
-    private ChessGame.TeamColor color;
-    private ChessPiece.PieceType pieceType;
+    private final ChessGame.TeamColor color;
+    private final ChessPiece.PieceType pieceType;
 
 
     private static final Map<PieceType, String> TYPE_TO_CHAR_MAP = Map.of(
@@ -81,24 +81,33 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        switch (pieceType) {
-            case KING:
+        return switch (pieceType) {
+            case KING -> {
                 moves = KingMovesCalculator.CalculateKingMoves(board, myPosition);
-                return moves;
-            case QUEEN:
+                yield moves;
+            }
+            case QUEEN -> {
                 moves = QueenMovesCalculator.CalculateQueenMoves(board, myPosition);
-                return moves;
-            case BISHOP:
+                yield moves;
+            }
+            case BISHOP -> {
                 moves = BishopMovesCalculator.CalculateBishopMoves(board, myPosition);
-                return moves;
-            case KNIGHT:
+                yield moves;
+            }
+            case KNIGHT -> {
                 moves = KnightMovesCalculator.CalculateKnightMoves(board, myPosition);
-                return moves;
-            case ROOK:
+                yield moves;
+            }
+            case ROOK -> {
                 moves = RookMovesCalculator.CalculateRookMoves(board, myPosition);
-                return moves;
-        }
-        return moves;
+                yield moves;
+            }
+            case PAWN -> {
+                moves = PawnMovesCalculator.CalculatePawnMoves(board, myPosition);
+                yield moves;
+            }
+            default -> moves;
+        };
     }
 
     @Override
