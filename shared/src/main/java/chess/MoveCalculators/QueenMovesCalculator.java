@@ -10,6 +10,12 @@ import java.util.Collection;
 
 public class QueenMovesCalculator {
     public static Collection<ChessMove> CalculateQueenMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
-        return new ArrayList<>();
+        //basically a rook and a bishop combined
+        Collection<ChessMove> moves = BishopMovesCalculator.CalculateBishopMoves(board, myPosition, color);
+        moves.addAll(RookMovesCalculator.CalculateRookMoves(board, myPosition, color));
+
+        return moves;
+
+
     }
 }
