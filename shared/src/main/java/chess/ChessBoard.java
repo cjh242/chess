@@ -15,7 +15,7 @@ public class ChessBoard {
         this.board = new ChessPiece[8][8];
     }
 
-    private ChessPiece[][] board;
+    private final ChessPiece[][] board;
     /**
      * Adds a chess piece to the chessboard
      *
