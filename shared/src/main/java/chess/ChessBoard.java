@@ -13,7 +13,6 @@ public class ChessBoard {
 
     public ChessBoard() {
         this.board = new ChessPiece[8][8];
-        resetBoard();
     }
 
     private ChessPiece[][] board;
@@ -51,12 +50,12 @@ public class ChessBoard {
             }
         }
 
-        // add all the black pawns
+        // add all the white pawns
         for (int i = 1; i < 9; i++) {
             addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         }
 
-        //adding the rest of the black pieces
+        //adding the rest of the white pieces
         addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
@@ -67,12 +66,12 @@ public class ChessBoard {
         addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
 
 
-        //add all the white pawns
+        //add all the black pawns
         for (int i = 1; i < 9; i++) {
             addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
 
-        //adding the rest of the white pieces
+        //adding the rest of the black pieces
         addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(8, 3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
@@ -81,6 +80,14 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
         addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+    }
+
+    public boolean isValidPosition(ChessPosition position, ChessGame.TeamColor color) {
+        return isOnBoard(position) && (getPiece(position) == null || getPiece(position).getTeamColor() != color);
+    }
+
+    private boolean isOnBoard(ChessPosition position){
+        return position.getRow() <= 8 && position.getColumn() <= 8 && position.getRow() >= 1 && position.getColumn() >= 1;
     }
 
     @Override

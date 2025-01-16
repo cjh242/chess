@@ -80,30 +80,30 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
+        Collection<ChessMove> moves;
         return switch (pieceType) {
             case KING -> {
-                moves = KingMovesCalculator.CalculateKingMoves(board, myPosition);
+                moves = KingMovesCalculator.CalculateKingMoves(board, myPosition, getTeamColor());
                 yield moves;
             }
             case QUEEN -> {
-                moves = QueenMovesCalculator.CalculateQueenMoves(board, myPosition);
+                moves = QueenMovesCalculator.CalculateQueenMoves(board, myPosition, getTeamColor());
                 yield moves;
             }
             case BISHOP -> {
-                moves = BishopMovesCalculator.CalculateBishopMoves(board, myPosition);
+                moves = BishopMovesCalculator.CalculateBishopMoves(board, myPosition, getTeamColor());
                 yield moves;
             }
             case KNIGHT -> {
-                moves = KnightMovesCalculator.CalculateKnightMoves(board, myPosition);
+                moves = KnightMovesCalculator.CalculateKnightMoves(board, myPosition, getTeamColor());
                 yield moves;
             }
             case ROOK -> {
-                moves = RookMovesCalculator.CalculateRookMoves(board, myPosition);
+                moves = RookMovesCalculator.CalculateRookMoves(board, myPosition, getTeamColor());
                 yield moves;
             }
             case PAWN -> {
-                moves = PawnMovesCalculator.CalculatePawnMoves(board, myPosition);
+                moves = PawnMovesCalculator.CalculatePawnMoves(board, myPosition, getTeamColor());
                 yield moves;
             }
         };
