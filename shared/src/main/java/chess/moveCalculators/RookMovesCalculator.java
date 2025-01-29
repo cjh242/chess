@@ -1,4 +1,4 @@
-package chess.MoveCalculators;
+package chess.moveCalculators;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -8,43 +8,40 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BishopMovesCalculator {
-
-    public static Collection<ChessMove> CalculateBishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
+public class RookMovesCalculator {
+    public static Collection<ChessMove> calculateRookMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
         // King can go on space in any direction
         Collection<ChessMove> moves = new ArrayList<>();
 
         Collection<ChessPosition> positions = new ArrayList<>();
         ChessPosition position;
 
-        //go up and right
-        for(int i = myPosition.getRow() + 1, j = myPosition.getColumn() + 1; i <= 8 && j <= 8; i++, j++){
-            position = new ChessPosition(i, j);
+        //go down the row
+        for(int i = myPosition.getRow() + 1; i <= 8; i++){
+            position = new ChessPosition(i, myPosition.getColumn());
             positions.add(position);
             if(board.getPiece(position) != null) {
                 break;
             }
         }
-        //go up and left
-        for(int i = myPosition.getRow() + 1, j = myPosition.getColumn() - 1; i <= 8 && j >= 1; i++, j--){
-            position = new ChessPosition(i, j);
+        for(int i = myPosition.getRow() - 1; i >= 1; i--){
+            position = new ChessPosition(i, myPosition.getColumn());
             positions.add(position);
             if(board.getPiece(position) != null) {
                 break;
             }
         }
 
-        //go down and right
-        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() + 1; i >= 1 && j <= 8; i--, j++){
-            position = new ChessPosition(i, j);
+        //go down the columm
+        for(int i = myPosition.getColumn() + 1; i <= 8; i++){
+            position = new ChessPosition(myPosition.getRow(), i);
             positions.add(position);
             if(board.getPiece(position) != null) {
                 break;
             }
         }
-        //go down and left
-        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i >= 1 && j >= 1; i--, j--){
-            position = new ChessPosition(i, j);
+        for(int i = myPosition.getColumn() - 1; i >= 1; i--){
+            position = new ChessPosition(myPosition.getRow(), i);
             positions.add(position);
             if(board.getPiece(position) != null) {
                 break;

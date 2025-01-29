@@ -1,4 +1,4 @@
-package chess.MoveCalculators;
+package chess.moveCalculators;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KnightMovesCalculator {
-    public static Collection<ChessMove> CalculateKnightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
+    public static Collection<ChessMove> calculateKnightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
         // Knight can go vert 2 hort 1 or hort 2 vert 1
         Collection<ChessMove> moves = new ArrayList<>();
 

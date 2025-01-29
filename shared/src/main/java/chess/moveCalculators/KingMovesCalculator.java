@@ -1,4 +1,4 @@
-package chess.MoveCalculators;
+package chess.moveCalculators;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -10,7 +10,7 @@ import java.util.Collection;
 
 public class KingMovesCalculator {
 
-    public static Collection<ChessMove> CalculateKingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
+    public static Collection<ChessMove> calculateKingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
         // King can go on space in any direction
         Collection<ChessMove> moves = new ArrayList<>();
 

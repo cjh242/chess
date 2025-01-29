@@ -1,4 +1,4 @@
-package chess.MoveCalculators;
+package chess.moveCalculators;
 
 import chess.*;
 
@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class PawnMovesCalculator {
 
-    public static Collection<ChessMove> CalculatePawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
+    public static Collection<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
         //can go one square forward, two if it is the initial turn
         Collection<ChessMove> moves = new ArrayList<>();
         Collection<ChessPosition> positions = new ArrayList<>();
