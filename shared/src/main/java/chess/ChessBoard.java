@@ -39,6 +39,35 @@ public class ChessBoard {
     }
 
     /**
+     * moves a piece from the start position to the end position
+     * if no piece is at the start position, does nothing
+     */
+    public void movePiece(ChessMove move){
+
+        ChessPiece piece = getPiece(move.getStartPosition());
+        if(piece != null){
+            addPiece(move.getStartPosition(), null);
+            addPiece(move.getEndPosition(), piece);
+        }
+    }
+
+    /**
+     * finds the king for a specified color and returns its location
+     */
+    public ChessPosition getKingLocation(ChessGame.TeamColor color) {
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = getPiece(position);
+                if(piece.getTeamColor() == color && piece.getPieceType() == ChessPiece.PieceType.KING){
+                    return position;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
