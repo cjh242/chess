@@ -51,10 +51,83 @@ public class ChessBoard {
         }
     }
 
+    private boolean checkDiagonals(ChessPosition currPosition, int rowDif, int colDif, ChessGame.TeamColor color){
+        ChessPiece currPiece;
+        do {
+            currPosition = new ChessPosition(currPosition.getRow() + rowDif, currPosition.getColumn() + colDif);
+
+            currPiece = getPiece(currPosition);
+
+            if (currPiece != null && currPiece.getTeamColor() != color && (currPiece.getPieceType() == ChessPiece.PieceType.QUEEN || currPiece.getPieceType() == ChessPiece.PieceType.BISHOP)){
+                return true;
+            }
+        } while (isOnBoard(currPosition) && currPiece == null);
+
+        return false;
+    }
+    /**
+     * checks the diagonals for appropriate pieces and returns true if one is found
+     */
+    public boolean checkDiagonals(ChessPosition position) {
+        ChessGame.TeamColor color = getPiece(position).getTeamColor();
+
+        return checkDiagonals(position, -1, -1, color)
+                || checkDiagonals(position, -1, 1, color)
+                || checkDiagonals(position, 1, -1, color)
+                || checkDiagonals(position, 1, 1, color);
+    }
+
+    private boolean checkStraights(ChessPosition currPosition, int rowDif, int colDif, ChessGame.TeamColor color){
+        ChessPiece currPiece;
+        do {
+            currPosition = new ChessPosition(currPosition.getRow() + rowDif, currPosition.getColumn() + colDif);
+
+            currPiece = getPiece(currPosition);
+
+            if (currPiece != null && currPiece.getTeamColor() != color && currPiece.getPieceType() == ChessPiece.PieceType.ROOK){
+                return true;
+            }
+        } while (isOnBoard(currPosition) && currPiece == null);
+
+        return false;
+    }
+
+    /**
+     * checks the straights for appropriate pieces and returns true if one is found
+     */
+    public boolean checkStraights(ChessPosition position) {
+        ChessGame.TeamColor color = getPiece(position).getTeamColor();
+
+        return checkStraights(position, 1, 0, color)
+                || checkStraights(position, 0, 1, color)
+                || checkStraights(position, -1, 0, color)
+                || checkStraights(position, 0, -1, color);
+    }
+
+
+    private boolean checkKnightPosition(ChessPosition position, ChessGame.TeamColor color){
+        return isOnBoard(position) && getPiece(position) != null && getPiece(position).getTeamColor() != color && getPiece(position).getPieceType() == ChessPiece.PieceType.KNIGHT;
+    }
+    /**
+     * checks the possible knight positions and returns true if one is found
+     */
+    public boolean checkKnightPositions(ChessPosition position) {
+        ChessGame.TeamColor color = getPiece(position).getTeamColor();
+
+        return checkKnightPosition(new ChessPosition(position.getRow() + 2, position.getColumn() + 1), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() + 2, position.getColumn() - 1), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() - 2, position.getColumn() + 1), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() - 2, position.getColumn() - 1), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() + 1, position.getColumn() + 2), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() + 1, position.getColumn() - 2), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() - 1, position.getColumn() + 2), color)
+                || checkKnightPosition(new ChessPosition(position.getRow() - 1, position.getColumn() - 2), color);
+    }
+
     /**
      * finds the king for a specified color and returns its location
      */
-    public ChessPosition getKingLocation(ChessGame.TeamColor color) {
+    public ChessPosition getKingPosition(ChessGame.TeamColor color) {
         for (int row = 1; row < 9; row++) {
             for (int col = 1; col < 9; col++) {
                 ChessPosition position = new ChessPosition(row, col);

@@ -108,19 +108,11 @@ public class ChessGame {
      */
     private boolean isInCheck(TeamColor teamColor, ChessBoard board) {
 
-        ChessPosition king = board.getKingLocation(teamColor);
-        Collection<ChessPiece> pieces = new ArrayList();
+        ChessPosition king = board.getKingPosition(teamColor);
 
-        //check for a bishop or a queen on the diagonals (or pawn in first square)
+         board.checkDiagonals(king);
 
-
-        //check for a rook or a queen on the straights
-
-
-        //check the knights possible spots
-
-
-        throw new RuntimeException("Not implemented");
+        return board.checkDiagonals(king) || board.checkStraights(king) || board.checkKnightPositions(king);
     }
 
 
