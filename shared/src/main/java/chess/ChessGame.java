@@ -110,9 +110,7 @@ public class ChessGame {
 
         ChessPosition king = board.getKingPosition(teamColor);
 
-         board.checkDiagonals(king);
-
-        return board.checkDiagonals(king) || board.checkStraights(king) || board.checkKnightPositions(king);
+        return board.checkDiagonals(king) || board.checkStraights(king) || board.checkKnightPositions(king) || board.checkPawnPositions(king);
     }
 
 

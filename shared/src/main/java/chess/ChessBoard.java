@@ -51,6 +51,26 @@ public class ChessBoard {
         }
     }
 
+    public boolean checkPawnPositions(ChessPosition position){
+        ChessGame.TeamColor color = getPiece(position).getTeamColor();
+
+        //pawns cant come from behind, so just have two positions to check for each color
+        if (color == ChessGame.TeamColor.WHITE){
+            //up a column both directions
+            ChessPosition position1 = new ChessPosition(position.getRow() + 1, position.getColumn() + 1);
+            ChessPosition position2 = new ChessPosition(position.getRow() - 1, position.getColumn() + 1);
+            return (getPiece(position1) != null && getPiece(position1).getTeamColor() != color && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN)
+                    || (getPiece(position2) != null && getPiece(position2).getTeamColor() != color && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN);
+        }
+        else{
+            //back a column both directions
+            ChessPosition position1 = new ChessPosition(position.getRow() + 1, position.getColumn() - 1);
+            ChessPosition position2 = new ChessPosition(position.getRow() - 1, position.getColumn() - 1);
+            return (getPiece(position1) != null && getPiece(position1).getTeamColor() != color && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN)
+                    || (getPiece(position2) != null && getPiece(position2).getTeamColor() != color && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN);
+        }
+    }
+
     private boolean checkDiagonals(ChessPosition currPosition, int rowDif, int colDif, ChessGame.TeamColor color){
         ChessPiece currPiece;
         do {
