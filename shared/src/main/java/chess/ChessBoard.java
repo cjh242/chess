@@ -108,7 +108,10 @@ public class ChessBoard {
     }
 
     private boolean checkKingPosition(ChessGame.TeamColor color, ChessPosition position){
-        return (isOnBoard(position) && getPiece(position) != null && getPiece(position).getTeamColor() != color && getPiece(position).getPieceType() == ChessPiece.PieceType.KING);
+        return (isOnBoard(position)
+                && getPiece(position) != null
+                && getPiece(position).getTeamColor() != color
+                && getPiece(position).getPieceType() == ChessPiece.PieceType.KING);
     }
 
     public boolean checkPawnPositions(ChessPosition position){
@@ -131,14 +134,14 @@ public class ChessBoard {
     }
 
     private boolean checkPawnPositions(ChessGame.TeamColor color, ChessPosition position1, ChessPosition position2) {
-        if(isOnBoard(position1) && getPiece(position1) != null && getPiece(position1).getTeamColor() != color && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN){
-            System.out.println("Threatening Pawn in position 1");
-        }
-        if(isOnBoard(position2) && getPiece(position2) != null && getPiece(position2).getTeamColor() != color && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN){
-            System.out.println("Threatening Pawn in position 2");
-        }
-        return (isOnBoard(position1) && getPiece(position1) != null && getPiece(position1).getTeamColor() != color && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN)
-                || (isOnBoard(position2) && getPiece(position2) != null && getPiece(position2).getTeamColor() != color && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN);
+        return (isOnBoard(position1)
+                && getPiece(position1) != null
+                && getPiece(position1).getTeamColor() != color
+                && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN)
+                || (isOnBoard(position2)
+                        && getPiece(position2) != null
+                        && getPiece(position2).getTeamColor() != color
+                        && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN);
     }
 
     private boolean checkDiagonals(ChessPosition currPosition, int rowDif, int colDif, ChessGame.TeamColor color){
@@ -155,7 +158,10 @@ public class ChessBoard {
             }
 
 
-            if (currPiece != null && currPiece.getTeamColor() != color && (currPiece.getPieceType() == ChessPiece.PieceType.QUEEN || currPiece.getPieceType() == ChessPiece.PieceType.BISHOP)){
+            if (currPiece != null
+                    && currPiece.getTeamColor() != color
+                    && (currPiece.getPieceType() == ChessPiece.PieceType.QUEEN
+                    || currPiece.getPieceType() == ChessPiece.PieceType.BISHOP)){
                 return true;
             }
         } while (isOnBoard(currPosition) && currPiece == null);
@@ -187,7 +193,10 @@ public class ChessBoard {
                 continue;
             }
 
-            if (currPiece != null && currPiece.getTeamColor() != color && (currPiece.getPieceType() == ChessPiece.PieceType.ROOK || currPiece.getPieceType() == ChessPiece.PieceType.QUEEN)){
+            if (currPiece != null
+                    && currPiece.getTeamColor() != color
+                    && (currPiece.getPieceType() == ChessPiece.PieceType.ROOK
+                    || currPiece.getPieceType() == ChessPiece.PieceType.QUEEN)){
                 return true;
             }
         } while (isOnBoard(currPosition) && currPiece == null);
@@ -209,7 +218,10 @@ public class ChessBoard {
 
 
     private boolean checkKnightPosition(ChessPosition position, ChessGame.TeamColor color){
-        return isOnBoard(position) && getPiece(position) != null && getPiece(position).getTeamColor() != color && getPiece(position).getPieceType() == ChessPiece.PieceType.KNIGHT;
+        return isOnBoard(position)
+                && getPiece(position) != null
+                && getPiece(position).getTeamColor() != color
+                && getPiece(position).getPieceType() == ChessPiece.PieceType.KNIGHT;
     }
     /**
      * checks the possible knight positions and returns true if one is found
