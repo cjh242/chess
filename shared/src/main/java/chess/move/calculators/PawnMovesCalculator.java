@@ -29,7 +29,7 @@ public class PawnMovesCalculator {
         //add non-taking moves
         for (ChessPosition position : positions) {
             if(board.isValidPosition(position, color) && board.getPiece(position) == null) {
-                PawnMovesHelper(myPosition, moves, position);
+                pawnMovesHelper(myPosition, moves, position);
             }
         }
 
@@ -48,14 +48,14 @@ public class PawnMovesCalculator {
         //add taking moves
         for (ChessPosition position : positions) {
             if(board.isValidPosition(position, color) && board.getPiece(position) != null) {
-                PawnMovesHelper(myPosition, moves, position);
+                pawnMovesHelper(myPosition, moves, position);
             }
         }
 
         return moves;
     }
 
-    private static void PawnMovesHelper(ChessPosition myPosition, Collection<ChessMove> moves, ChessPosition position) {
+    private static void pawnMovesHelper(ChessPosition myPosition, Collection<ChessMove> moves, ChessPosition position) {
         if(position.getRow() == 8 || position.getRow() == 1) {
             for(ChessPiece.PieceType pieceType : ChessPiece.PieceType.values()) {
                 if(pieceType != ChessPiece.PieceType.PAWN && pieceType != ChessPiece.PieceType.KING) {
