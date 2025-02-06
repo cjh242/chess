@@ -29,15 +29,7 @@ public class PawnMovesCalculator {
         //add non-taking moves
         for (ChessPosition position : positions) {
             if(board.isValidPosition(position, color) && board.getPiece(position) == null) {
-                if(position.getRow() == 8 || position.getRow() == 1) {
-                    for(ChessPiece.PieceType pieceType : ChessPiece.PieceType.values()) {
-                        if(pieceType != ChessPiece.PieceType.PAWN && pieceType != ChessPiece.PieceType.KING) {
-                            moves.add(new ChessMove(myPosition, position, pieceType));
-                        }
-                    }
-                } else {
-                    moves.add(new ChessMove(myPosition, position, null));
-                }
+                PawnMovesHelper(myPosition, moves, position);
             }
         }
 
@@ -56,18 +48,22 @@ public class PawnMovesCalculator {
         //add taking moves
         for (ChessPosition position : positions) {
             if(board.isValidPosition(position, color) && board.getPiece(position) != null) {
-                if(position.getRow() == 8 || position.getRow() == 1) {
-                    for(ChessPiece.PieceType pieceType : ChessPiece.PieceType.values()) {
-                        if(pieceType != ChessPiece.PieceType.PAWN && pieceType != ChessPiece.PieceType.KING) {
-                            moves.add(new ChessMove(myPosition, position, pieceType));
-                        }
-                    }
-                } else {
-                    moves.add(new ChessMove(myPosition, position, null));
-                }
+                PawnMovesHelper(myPosition, moves, position);
             }
         }
 
         return moves;
+    }
+
+    private static void PawnMovesHelper(ChessPosition myPosition, Collection<ChessMove> moves, ChessPosition position) {
+        if(position.getRow() == 8 || position.getRow() == 1) {
+            for(ChessPiece.PieceType pieceType : ChessPiece.PieceType.values()) {
+                if(pieceType != ChessPiece.PieceType.PAWN && pieceType != ChessPiece.PieceType.KING) {
+                    moves.add(new ChessMove(myPosition, position, pieceType));
+                }
+            }
+        } else {
+            moves.add(new ChessMove(myPosition, position, null));
+        }
     }
 }
