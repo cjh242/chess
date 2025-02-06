@@ -19,6 +19,11 @@ public class ChessPiece {
         pieceType = type;
     }
 
+    public ChessPiece(ChessPiece piece){
+        this.color = piece.color;
+        this.pieceType = piece.pieceType;
+    }
+
     private final ChessGame.TeamColor color;
     private final ChessPiece.PieceType pieceType;
 
@@ -110,6 +115,11 @@ public class ChessPiece {
 
     @Override
     public String toString() {
+
+        if(color == ChessGame.TeamColor.WHITE) {
+            return TYPE_TO_CHAR_MAP.get(pieceType).toUpperCase();
+        }
+
         return TYPE_TO_CHAR_MAP.get(pieceType);
     }
 }
