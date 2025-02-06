@@ -117,20 +117,26 @@ public class ChessBoard {
         //pawns cant come from behind, so just have two positions to check for each color
         ChessPosition position1;
         ChessPosition position2;
-        if (color == ChessGame.TeamColor.BLACK){
+        if (color == ChessGame.TeamColor.WHITE){
             //up a column both directions
             position1 = new ChessPosition(position.getRow() + 1, position.getColumn() + 1);
-            position2 = new ChessPosition(position.getRow() - 1, position.getColumn() + 1);
+            position2 = new ChessPosition(position.getRow() + 1, position.getColumn() - 1);
         }
         else{
             //back a column both directions
-            position1 = new ChessPosition(position.getRow() + 1, position.getColumn() - 1);
+            position1 = new ChessPosition(position.getRow() - 1, position.getColumn() + 1);
             position2 = new ChessPosition(position.getRow() - 1, position.getColumn() - 1);
         }
         return checkPawnPositions(color, position1, position2);
     }
 
     private boolean checkPawnPositions(ChessGame.TeamColor color, ChessPosition position1, ChessPosition position2) {
+        if(isOnBoard(position1) && getPiece(position1) != null && getPiece(position1).getTeamColor() != color && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN){
+            System.out.println("Threatening Pawn in position 1");
+        }
+        if(isOnBoard(position2) && getPiece(position2) != null && getPiece(position2).getTeamColor() != color && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN){
+            System.out.println("Threatening Pawn in position 2");
+        }
         return (isOnBoard(position1) && getPiece(position1) != null && getPiece(position1).getTeamColor() != color && getPiece(position1).getPieceType() == ChessPiece.PieceType.PAWN)
                 || (isOnBoard(position2) && getPiece(position2) != null && getPiece(position2).getTeamColor() != color && getPiece(position2).getPieceType() == ChessPiece.PieceType.PAWN);
     }
