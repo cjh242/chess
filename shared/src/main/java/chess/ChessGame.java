@@ -60,7 +60,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
 
         ChessPiece piece = currentBoard.getPiece(startPosition);
-        if(piece == null) return null;
+        if(piece == null) {return null;}
         Collection<ChessMove> validMoves = new ArrayList<>();
         Collection<ChessMove> moves = piece.pieceMoves(currentBoard, startPosition);
         for(ChessMove move: moves){
@@ -136,7 +136,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
 
-        if(!isInCheck(teamColor)) return false;
+        if(!isInCheck(teamColor)) {return false;}
 
         return hasNoValidMoves(teamColor);
     }
