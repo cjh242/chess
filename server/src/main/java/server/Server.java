@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.MemoryGameDataDAO;
 import exception.ResponseException;
 import service.GameService;
 import service.UserService;
@@ -15,6 +16,12 @@ public class Server {
     public Server(GameService gameService, UserService userService) {
         this.gameService = gameService;
         this.userService = userService;
+    }
+
+    //for the tests
+    public Server(){
+        this.gameService = new GameService(new MemoryGameDataDAO());
+        this.userService = new UserService();
     }
 
     public int run(int desiredPort) {
@@ -60,7 +67,7 @@ public class Server {
     private Object listGames(Request req, Response res) throws ResponseException {
         res.type("application/json");
         var list = gameService.listGames().toArray();
-        return new Gson().toJson(Map.of("pet", list));
+        return new Gson().toJson(Map.of("game", list));
     }
 
 
