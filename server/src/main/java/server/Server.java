@@ -6,6 +6,7 @@ import dataaccess.MemoryGameDAO;
 import dataobjects.GameData;
 import exception.ResponseException;
 import request.CreateGameRequest;
+import request.RegisterRequest;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -37,7 +38,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-//        Spark.post("/user", this::addPet);
+        Spark.post("/user", this::register);
 //        Spark.post("/session", this::addPet);
         Spark.post("/game", this::addGame);
 //        Spark.put("/game", this::function);
@@ -62,6 +63,12 @@ public class Server {
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
         res.status(ex.StatusCode());
         res.body(ex.toJson());
+    }
+
+    private Object register(Request req, Response res) throws ResponseException {
+        var registerReq = new Gson().fromJson(req.body(), RegisterRequest.class);
+        var user = userService.addUser(registerReq);
+        return new Gson().toJson(user);
     }
 
     private Object addGame(Request req, Response res) throws ResponseException {

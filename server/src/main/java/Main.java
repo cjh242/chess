@@ -1,8 +1,5 @@
 import chess.*;
-import dataaccess.IAuthDAO;
-import dataaccess.IGameDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import server.Server;
 import service.AuthService;
 import service.GameService;
@@ -15,9 +12,10 @@ public class Main {
 
         IGameDAO gameData = new MemoryGameDAO();
         IAuthDAO authData = new MemoryAuthDAO();
+        IUserDAO userData = new MemoryUserDAO();
         var authService = new AuthService(authData);
         var gameService = new GameService(gameData, authService);
-        var userService = new UserService();
+        var userService = new UserService(userData);
 
         var server = new Server(gameService, userService, authService);
         server.run(8080);
