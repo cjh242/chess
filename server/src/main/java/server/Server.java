@@ -1,7 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.MemoryGameDataDAO;
+import dataaccess.MemoryGameDAO;
 import exception.ResponseException;
 import service.GameService;
 import service.UserService;
@@ -20,7 +20,7 @@ public class Server {
 
     //for the tests
     public Server(){
-        this.gameService = new GameService(new MemoryGameDataDAO());
+        this.gameService = new GameService(new MemoryGameDAO());
         this.userService = new UserService();
     }
 
