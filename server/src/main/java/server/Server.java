@@ -3,7 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
-import dataobjects.GameData;
+import dataaccess.MemoryUserDAO;
 import exception.ResponseException;
 import request.CreateGameRequest;
 import request.RegisterRequest;
@@ -29,7 +29,7 @@ public class Server {
     public Server(){
         this.authService = new AuthService(new MemoryAuthDAO());
         this.gameService = new GameService(new MemoryGameDAO(), this.authService);
-        this.userService = new UserService();
+        this.userService = new UserService(new MemoryUserDAO());
     }
 
     public int run(int desiredPort) {
@@ -67,7 +67,7 @@ public class Server {
 
     private Object register(Request req, Response res) throws ResponseException {
         var registerReq = new Gson().fromJson(req.body(), RegisterRequest.class);
-        var user = userService.addUser(registerReq);
+        var user = userService.register(registerReq);
         return new Gson().toJson(user);
     }
 

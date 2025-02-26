@@ -15,7 +15,12 @@ public class UserService {
     }
 
     public LoginResult register(RegisterRequest registerRequest) throws ResponseException {
-        userDao.addUser(registerRequest);
+        if(userDao.getUserByUsername(registerRequest.username()) != null){
+            return null;
+        }
+        var user = userDao.addUser(registerRequest);
+        var login = new LoginRequest(user.username(), user.password());
+        return login(login);
     }
     public LoginResult login(LoginRequest loginRequest) {
         return new LoginResult("", "");
