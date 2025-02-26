@@ -1,7 +1,10 @@
 import chess.*;
+import dataaccess.IAuthDAO;
 import dataaccess.IGameDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import server.Server;
+import service.AuthService;
 import service.GameService;
 import service.UserService;
 
@@ -11,10 +14,12 @@ public class Main {
         System.out.println("♕ 240 Chess Server: " + piece);
 
         IGameDAO gameData = new MemoryGameDAO();
-        var gameService = new GameService(gameData);
+        IAuthDAO authData = new MemoryAuthDAO();
+        var authService = new AuthService(authData);
+        var gameService = new GameService(gameData, authService);
         var userService = new UserService();
 
-        var server = new Server(gameService, userService);
+        var server = new Server(gameService, userService, authService);
         server.run(8080);
     }
 }

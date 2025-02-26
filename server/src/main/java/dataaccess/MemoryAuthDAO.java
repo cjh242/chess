@@ -12,12 +12,12 @@ public class MemoryAuthDAO implements IAuthDAO {
     public AuthData addAuth(AuthData auth) throws ResponseException {
         auth = new AuthData(generateToken(), auth.username());
 
-        auths.put(auth.username(), auth);
+        auths.put(auth.authToken(), auth);
         return auth;
     }
 
-    public AuthData getAuthByUsername(String username) throws ResponseException {
-        return auths.get(username);
+    public AuthData getAuthByToken(String authToken) throws ResponseException {
+        return auths.get(authToken);
     }
 
     private static String generateToken() {

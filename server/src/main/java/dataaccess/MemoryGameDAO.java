@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import dataobjects.GameData;
 import exception.ResponseException;
 
@@ -14,8 +15,8 @@ public class MemoryGameDAO implements IGameDAO {
         return games.values();
     }
 
-    public GameData addGame(GameData game) throws ResponseException {
-        game = new GameData(nextId++, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+    public GameData addGame(String gameName) throws ResponseException {
+        var game = new GameData(nextId++, "", "", gameName, new ChessGame());
 
         games.put(game.gameId(), game);
         return game;

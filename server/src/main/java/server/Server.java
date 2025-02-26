@@ -1,9 +1,12 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataobjects.GameData;
 import exception.ResponseException;
+import request.CreateGameRequest;
+import service.AuthService;
 import service.GameService;
 import service.UserService;
 import spark.*;
@@ -13,15 +16,18 @@ import java.util.Map;
 public class Server {
     private final GameService gameService;
     private final UserService userService;
+    private final AuthService authService;
 
-    public Server(GameService gameService, UserService userService) {
+    public Server(GameService gameService, UserService userService, AuthService authService) {
         this.gameService = gameService;
         this.userService = userService;
+        this.authService = authService;
     }
 
     //for the tests
     public Server(){
-        this.gameService = new GameService(new MemoryGameDAO());
+        this.authService = new AuthService(new MemoryAuthDAO());
+        this.gameService = new GameService(new MemoryGameDAO(), this.authService);
         this.userService = new UserService();
     }
 
@@ -59,10 +65,10 @@ public class Server {
     }
 
     private Object addGame(Request req, Response res) throws ResponseException {
-        var pet = new Gson().fromJson(req.body(), GameData.class);
-        pet = gameService.addGame(pet);
+        var gameReq = new Gson().fromJson(req.body(), CreateGameRequest.class);
+        var game = gameService.addGame(gameReq);
         //webSocketHandler.makeNoise(pet.name(), pet.sound());
-        return new Gson().toJson(pet);
+        return new Gson().toJson(game);
     }
 
     private Object listGames(Request req, Response res) throws ResponseException {
