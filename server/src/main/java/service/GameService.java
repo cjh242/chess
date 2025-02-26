@@ -24,6 +24,7 @@ public class GameService {
         if(authService.isAuthValid(game.authToken())){
             return gameDao.addGame(game.gameName());
         }
+        return null;
     }
 
     public void deleteAllGames() throws ResponseException {

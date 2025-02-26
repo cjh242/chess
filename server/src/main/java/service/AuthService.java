@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.IAuthDAO;
+import exception.ResponseException;
 
 public class AuthService {
     private final IAuthDAO authDao;
@@ -9,7 +10,7 @@ public class AuthService {
         this.authDao = authDao;
     }
 
-    public boolean isAuthValid(String authToken){
+    public boolean isAuthValid(String authToken) throws ResponseException {
         var auth = authDao.getAuthByToken(authToken);
         return auth != null;
     }

@@ -16,7 +16,7 @@ public class MemoryGameDAO implements IGameDAO {
     }
 
     public GameData addGame(String gameName) throws ResponseException {
-        var game = new GameData(nextId++, "", "", gameName, new ChessGame());
+        var game = new GameData(nextId++, null, null, gameName, new ChessGame());
 
         games.put(game.gameId(), game);
         return game;
