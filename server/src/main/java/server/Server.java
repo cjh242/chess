@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.MemoryGameDAO;
+import dataobjects.GameData;
 import exception.ResponseException;
 import service.GameService;
 import service.UserService;
@@ -32,11 +33,11 @@ public class Server {
         // Register your endpoints and handle exceptions here.
 //        Spark.post("/user", this::addPet);
 //        Spark.post("/session", this::addPet);
-//        Spark.post("/game", this::addPet);
+        Spark.post("/game", this::addGame);
 //        Spark.put("/game", this::function);
         Spark.get("/game", this::listGames);
 //        Spark.delete("/pet/:id", this::deletePet);
-//        Spark.delete("/db", this::deleteAllPets);
+        Spark.delete("/db", this::deleteAll);
 //        Spark.delete("/session", this::deleteAllPets);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
@@ -57,12 +58,12 @@ public class Server {
         res.body(ex.toJson());
     }
 
-//    private Object addPet(Request req, Response res) throws ResponseException {
-//        var pet = new Gson().fromJson(req.body(), Pet.class);
-//        pet = service.addPet(pet);
-//        webSocketHandler.makeNoise(pet.name(), pet.sound());
-//        return new Gson().toJson(pet);
-//    }
+    private Object addGame(Request req, Response res) throws ResponseException {
+        var pet = new Gson().fromJson(req.body(), GameData.class);
+        pet = gameService.addGame(pet);
+        //webSocketHandler.makeNoise(pet.name(), pet.sound());
+        return new Gson().toJson(pet);
+    }
 
     private Object listGames(Request req, Response res) throws ResponseException {
         res.type("application/json");
@@ -84,9 +85,10 @@ public class Server {
 //        return "";
 //    }
 
-//    private Object deleteAllPets(Request req, Response res) throws ResponseException {
-//        service.deleteAllPets();
-//        res.status(204);
-//        return "";
-//    }
+    private Object deleteAll(Request req, Response res) throws ResponseException {
+        gameService.deleteAllGames();
+        //TODO: DELETE FROM THE OTHER THINGS
+        res.status(204);
+        return "";
+    }
 }
