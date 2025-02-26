@@ -16,8 +16,11 @@ public class GameService {
         this.authService = authService;
     }
 
-    public Collection<GameData> listGames() throws ResponseException {
-        return gameDao.listGames();
+    public Collection<GameData> listGames(String authToken) throws ResponseException {
+        if(authService.isAuthValid(authToken)){
+            return gameDao.listGames();
+        }
+        return null;
     }
 
     public GameData addGame(CreateGameRequest game) throws ResponseException {

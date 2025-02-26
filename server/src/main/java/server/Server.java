@@ -73,7 +73,7 @@ public class Server {
 
     private Object listGames(Request req, Response res) throws ResponseException {
         res.type("application/json");
-        var list = gameService.listGames().toArray();
+        var list = gameService.listGames(req.headers("Authorization")).toArray();
         return new Gson().toJson(Map.of("game", list));
     }
 
@@ -93,6 +93,7 @@ public class Server {
 
     private Object deleteAll(Request req, Response res) throws ResponseException {
         gameService.deleteAllGames();
+        authService.deleteAllAuths();
         //TODO: DELETE FROM THE OTHER THINGS
         res.status(204);
         return "";
