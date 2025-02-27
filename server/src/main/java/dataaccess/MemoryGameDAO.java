@@ -15,10 +15,19 @@ public class MemoryGameDAO implements IGameDAO {
         return games.values();
     }
 
+    public GameData findByID(int gameID) throws ResponseException {
+        return games.get(gameID);
+    }
+
+    public GameData update(GameData game){
+        games.put(game.gameID(), game);
+        return game;
+    }
+
     public GameData addGame(String gameName) throws ResponseException {
         var game = new GameData(nextId++, null, null, gameName, new ChessGame());
 
-        games.put(game.gameId(), game);
+        games.put(game.gameID(), game);
         return game;
     }
 

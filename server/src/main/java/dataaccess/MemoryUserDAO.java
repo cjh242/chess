@@ -8,7 +8,7 @@ import request.RegisterRequest;
 import java.util.HashMap;
 
 public class MemoryUserDAO implements IUserDAO {
-    final private HashMap<String, UserData> users = new HashMap();
+    final private HashMap<String, UserData> users = new HashMap<>();
 
     public UserData addUser(RegisterRequest request) throws ResponseException {
         var user = new UserData(request.username(), request.password(), request.email());

@@ -15,7 +15,7 @@ public class Main {
         IUserDAO userData = new MemoryUserDAO();
         var authService = new AuthService(authData);
         var gameService = new GameService(gameData, authService);
-        var userService = new UserService(userData);
+        var userService = new UserService(userData, authService);
 
         var server = new Server(gameService, userService, authService);
         server.run(8080);

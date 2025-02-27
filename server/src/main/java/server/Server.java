@@ -5,8 +5,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import exception.ResponseException;
-import request.CreateGameRequest;
-import request.RegisterRequest;
+import request.*;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -29,7 +28,7 @@ public class Server {
     public Server(){
         this.authService = new AuthService(new MemoryAuthDAO());
         this.gameService = new GameService(new MemoryGameDAO(), this.authService);
-        this.userService = new UserService(new MemoryUserDAO());
+        this.userService = new UserService(new MemoryUserDAO(), this.authService);
     }
 
     public int run(int desiredPort) {
@@ -39,13 +38,13 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::register);
-//        Spark.post("/session", this::addPet);
-        Spark.post("/game", this::addGame);
-//        Spark.put("/game", this::function);
+        Spark.post("/session", this::login);
+        Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         Spark.get("/game", this::listGames);
 //        Spark.delete("/pet/:id", this::deletePet);
         Spark.delete("/db", this::deleteAll);
-//        Spark.delete("/session", this::deleteAllPets);
+        Spark.delete("/session", this::logout);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -71,11 +70,25 @@ public class Server {
         return new Gson().toJson(user);
     }
 
-    private Object addGame(Request req, Response res) throws ResponseException {
+    private Object login(Request req, Response res) throws ResponseException {
+        var loginReq = new Gson().fromJson(req.body(), LoginRequest.class);
+        var loginRes = userService.login(loginReq);
+        return new Gson().toJson(loginRes);
+    }
+
+    private Object createGame(Request req, Response res) throws ResponseException {
         var gameReq = new Gson().fromJson(req.body(), CreateGameRequest.class);
         var game = gameService.addGame(gameReq);
         //webSocketHandler.makeNoise(pet.name(), pet.sound());
         return new Gson().toJson(game);
+    }
+
+    private Object joinGame(Request req, Response res) throws ResponseException {
+        var joinReq = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        joinReq = joinReq.withAuthToken(req.headers("Authorization"));
+        var game = gameService.joinGame(joinReq);
+        res.status(200);
+        return "";
     }
 
     private Object listGames(Request req, Response res) throws ResponseException {
@@ -84,25 +97,18 @@ public class Server {
         return new Gson().toJson(Map.of("game", list));
     }
 
-
-//    private Object deletePet(Request req, Response res) throws ResponseException {
-//        var id = Integer.parseInt(req.params(":id"));
-//        var pet = service.getPet(id);
-//        if (pet != null) {
-//            service.deletePet(id);
-//            webSocketHandler.makeNoise(pet.name(), pet.sound());
-//            res.status(204);
-//        } else {
-//            res.status(404);
-//        }
-//        return "";
-//    }
-
     private Object deleteAll(Request req, Response res) throws ResponseException {
         gameService.deleteAllGames();
         authService.deleteAllAuths();
-        //TODO: DELETE FROM THE OTHER THINGS
+        userService.deleteAllUsers();
         res.status(204);
+        return "";
+    }
+
+    private Object logout(Request req, Response res) throws ResponseException {
+        var logoutReq = new LogoutRequest(req.headers("Authorization"));
+        authService.logout(logoutReq);
+        res.status(200);
         return "";
     }
 }
