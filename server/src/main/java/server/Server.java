@@ -42,13 +42,12 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.get("/game", this::listGames);
-//        Spark.delete("/pet/:id", this::deletePet);
         Spark.delete("/db", this::deleteAll);
         Spark.delete("/session", this::logout);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        //This line initializes the server and can be removed once you have a functioning endpoint
+//        Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -78,8 +77,8 @@ public class Server {
 
     private Object createGame(Request req, Response res) throws ResponseException {
         var gameReq = new Gson().fromJson(req.body(), CreateGameRequest.class);
+        gameReq = gameReq.withAuthToken(req.headers("Authorization"));
         var game = gameService.addGame(gameReq);
-        //webSocketHandler.makeNoise(pet.name(), pet.sound());
         return new Gson().toJson(game);
     }
 
@@ -87,14 +86,13 @@ public class Server {
         var joinReq = new Gson().fromJson(req.body(), JoinGameRequest.class);
         joinReq = joinReq.withAuthToken(req.headers("Authorization"));
         var game = gameService.joinGame(joinReq);
-        res.status(200);
-        return "";
+        return new Gson().toJson(game);
     }
 
     private Object listGames(Request req, Response res) throws ResponseException {
-        res.type("application/json");
-        var list = gameService.listGames(req.headers("Authorization")).toArray();
-        return new Gson().toJson(Map.of("game", list));
+        var list = gameService.listGames(req.headers("Authorization"));
+        var response = Map.of("games", list);
+        return new Gson().toJson(response);
     }
 
     private Object deleteAll(Request req, Response res) throws ResponseException {

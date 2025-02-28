@@ -7,6 +7,8 @@ import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 
+import java.util.Objects;
+
 public class UserService {
     private final IUserDAO userDao;
     private final AuthService authService;
@@ -26,7 +28,7 @@ public class UserService {
     }
     public LoginResult login(LoginRequest loginRequest) throws ResponseException {
         var user = userDao.getUserByUsername(loginRequest.username());
-        if(user.password() != loginRequest.password()){
+        if(!Objects.equals(user.password(), loginRequest.password())){
             return null;
         }
         var auth = authService.addAuth(loginRequest.username());

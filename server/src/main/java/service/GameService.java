@@ -30,11 +30,11 @@ public class GameService {
         return update(game);
     }
 
-    public GameData findGameByID(int gameID) throws ResponseException {
+    private GameData findGameByID(int gameID) throws ResponseException {
         return gameDao.findByID(gameID);
     }
 
-    public GameData update(GameData game) throws ResponseException {
+    private GameData update(GameData game) throws ResponseException {
         return gameDao.update(game);
     }
 
