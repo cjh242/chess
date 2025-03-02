@@ -1,9 +1,7 @@
 package service;
 
 import dataaccess.IUserDAO;
-import exception.ResponseException;
 import request.LoginRequest;
-import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.Result;
@@ -21,6 +19,9 @@ public class UserService {
 
     public LoginResult register(RegisterRequest registerRequest) {
         try {
+            if(!registerRequest.isValid()) {
+                return new LoginResult(null, null, 400);
+            }
             if(userDao.getUserByUsername(registerRequest.username()) != null){
                 return new LoginResult(null, null, 403);
             }

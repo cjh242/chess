@@ -71,6 +71,10 @@ public class Server {
             res.status(403);
             return new Gson().toJson(Map.of("message", "Error: already taken"));
         }
+        if(user.code() == 400) {
+            res.status(400);
+            return new Gson().toJson(Map.of("message", "Error: bad request"));
+        }
         return new Gson().toJson(user);
     }
 
@@ -115,10 +119,13 @@ public class Server {
         return "";
     }
 
-    private Object logout(Request req, Response res) throws ResponseException {
+    private Object logout(Request req, Response res) {
         var logoutReq = new LogoutRequest(req.headers("Authorization"));
-        authService.logout(logoutReq);
-        res.status(200);
+        var result = authService.logout(logoutReq);
+        if(result.code() == 401){
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        }
         return "";
     }
 }

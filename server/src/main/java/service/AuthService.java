@@ -13,13 +13,25 @@ public class AuthService {
         this.authDao = authDao;
     }
 
-    public void logout(LogoutRequest logout) throws ResponseException {
-        authDao.deleteAuth(logout.authToken());
+    public Result logout(LogoutRequest logout) {
+        try {
+            if (isAuthValid(logout.authToken())) {
+                authDao.deleteAuth(logout.authToken());
+                return new Result(200);
+            }
+            return new Result(401);
+        } catch (Exception ex) {
+            return new Result(500);
+        }
     }
 
-    public boolean isAuthValid(String authToken) throws ResponseException {
-        var auth = authDao.getAuthByToken(authToken);
-        return auth != null;
+    public boolean isAuthValid(String authToken) {
+        try {
+            var auth = authDao.getAuthByToken(authToken);
+            return auth != null;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     public AuthData getAuthByID(String authToken) throws ResponseException {
