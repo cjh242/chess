@@ -6,6 +6,8 @@ import dataobjects.GameData;
 import exception.ResponseException;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
+import result.CreateGameResult;
+import result.Result;
 
 import java.util.Collection;
 
@@ -45,14 +47,24 @@ public class GameService {
         return null;
     }
 
-    public GameData addGame(CreateGameRequest game) throws ResponseException {
-        if(authService.isAuthValid(game.authToken())){
-            return gameDao.addGame(game.gameName());
+    public CreateGameResult addGame(CreateGameRequest game) {
+        try {
+            if(authService.isAuthValid(game.authToken())){
+                var createdGame = gameDao.addGame(game.gameName());
+                return new CreateGameResult(createdGame.gameID(), 200);
+            }
+        } catch (Exception ex) {
+            return new CreateGameResult(0, 500);
         }
-        return null;
+        return new CreateGameResult(0, 401);
     }
 
-    public void deleteAllGames() throws ResponseException {
-        gameDao.deleteAllGames();
+    public Result deleteAllGames() {
+        try {
+            gameDao.deleteAllGames();
+            return new Result(200);
+        } catch (Exception ex) {
+            return new Result(500);
+        }
     }
 }

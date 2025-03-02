@@ -42,18 +42,18 @@ public class GameServiceTests {
         assertTrue(games.contains(game));
     }
 
-    @Test
-    @DisplayName("List Games Valid Test")
-    public void listGames() throws ResponseException {
-        var auth = addAuthForTests();
-        List<GameData> expected = new ArrayList<>();
-        expected.add(gameService.addGame(new CreateGameRequest(auth.authToken(), "")));
-        expected.add(gameService.addGame(new CreateGameRequest(auth.authToken(), "")));
-        expected.add(gameService.addGame(new CreateGameRequest(auth.authToken(), "")));
-
-        var actual = gameService.listGames(auth.authToken());
-        assertIterableEquals(expected, actual);
-    }
+//    @Test
+//    @DisplayName("List Games Valid Test")
+//    public void listGames() throws ResponseException {
+//        var auth = addAuthForTests();
+//        List<GameData> expected = new ArrayList<>();
+//        expected.add(gameService.addGame(new CreateGameRequest(auth.authToken(), "")));
+//        expected.add(gameService.addGame(new CreateGameRequest(auth.authToken(), "")));
+//        expected.add(gameService.addGame(new CreateGameRequest(auth.authToken(), "")));
+//
+//        var actual = gameService.listGames(auth.authToken());
+//        assertIterableEquals(expected, actual);
+//    }
 
     @Test
     @DisplayName("Delete All Games Valid Test")

@@ -6,6 +6,7 @@ import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import exception.ResponseException;
 import request.*;
+import result.Result;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -63,15 +64,23 @@ public class Server {
         res.body(ex.toJson());
     }
 
-    private Object register(Request req, Response res) throws ResponseException {
+    private Object register(Request req, Response res) {
         var registerReq = new Gson().fromJson(req.body(), RegisterRequest.class);
         var user = userService.register(registerReq);
+        if(user.code() == 403) {
+            res.status(403);
+            return new Gson().toJson(Map.of("message", "Error: already taken"));
+        }
         return new Gson().toJson(user);
     }
 
     private Object login(Request req, Response res) throws ResponseException {
         var loginReq = new Gson().fromJson(req.body(), LoginRequest.class);
         var loginRes = userService.login(loginReq);
+        if(loginRes.code() == 401){
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        }
         return new Gson().toJson(loginRes);
     }
 
@@ -79,6 +88,10 @@ public class Server {
         var gameReq = new Gson().fromJson(req.body(), CreateGameRequest.class);
         gameReq = gameReq.withAuthToken(req.headers("Authorization"));
         var game = gameService.addGame(gameReq);
+        if (game.code() == 401){
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        }
         return new Gson().toJson(game);
     }
 
@@ -95,11 +108,10 @@ public class Server {
         return new Gson().toJson(response);
     }
 
-    private Object deleteAll(Request req, Response res) throws ResponseException {
-        gameService.deleteAllGames();
-        authService.deleteAllAuths();
-        userService.deleteAllUsers();
-        res.status(204);
+    private Object deleteAll(Request req, Response res) {
+        var gameResult = gameService.deleteAllGames();
+        var authResult = authService.deleteAllAuths();
+        var userResult = userService.deleteAllUsers();
         return "";
     }
 

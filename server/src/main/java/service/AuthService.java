@@ -4,6 +4,7 @@ import dataaccess.IAuthDAO;
 import dataobjects.AuthData;
 import exception.ResponseException;
 import request.LogoutRequest;
+import result.Result;
 
 public class AuthService {
     private final IAuthDAO authDao;
@@ -29,7 +30,12 @@ public class AuthService {
         return authDao.addAuth(username);
     }
 
-    public void deleteAllAuths() {
-        authDao.deleteAllAuths();
+    public Result deleteAllAuths() {
+        try {
+            authDao.deleteAllAuths();
+            return new Result(200);
+        } catch (Exception ex) {
+            return new Result(500);
+        }
     }
 }

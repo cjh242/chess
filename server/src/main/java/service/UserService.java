@@ -6,6 +6,7 @@ import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.Result;
 
 import java.util.Objects;
 
@@ -18,24 +19,40 @@ public class UserService {
         this.authService = authService;
     }
 
-    public LoginResult register(RegisterRequest registerRequest) throws ResponseException {
-        if(userDao.getUserByUsername(registerRequest.username()) != null){
-            return null;
+    public LoginResult register(RegisterRequest registerRequest) {
+        try {
+            if(userDao.getUserByUsername(registerRequest.username()) != null){
+                return new LoginResult(null, null, 403);
+            }
+            var user = userDao.addUser(registerRequest);
+            var login = new LoginRequest(user.username(), user.password());
+            return login(login);
+        } catch (Exception ex) {
+            return new LoginResult(null, null, 500);
         }
-        var user = userDao.addUser(registerRequest);
-        var login = new LoginRequest(user.username(), user.password());
-        return login(login);
+
     }
-    public LoginResult login(LoginRequest loginRequest) throws ResponseException {
-        var user = userDao.getUserByUsername(loginRequest.username());
-        if(!Objects.equals(user.password(), loginRequest.password())){
-            return null;
+    public LoginResult login(LoginRequest loginRequest) {
+        try {
+            var user = userDao.getUserByUsername(loginRequest.username());
+            if(user == null || !Objects.equals(user.password(), loginRequest.password())){
+                //wrong password path or no user path
+                return new LoginResult(null, null, 401);
+            }
+            var auth = authService.addAuth(loginRequest.username());
+            return new LoginResult(auth.username(), auth.authToken(), 200);
+        } catch(Exception ex) {
+            return new LoginResult(null, null, 500);
         }
-        var auth = authService.addAuth(loginRequest.username());
-        return new LoginResult(auth.username(), auth.authToken());
+
     }
 
-    public void deleteAllUsers() throws ResponseException {
-        userDao.deleteAllUsers();
+    public Result deleteAllUsers() {
+        try{
+            userDao.deleteAllUsers();
+            return new Result(200);
+        } catch(Exception ex) {
+            return new Result(500);
+        }
     }
 }
