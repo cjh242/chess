@@ -30,7 +30,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("Add Game Valid Test")
+    @DisplayName("Add Game Valid")
     public void addGame() throws DataAccessException {
         var auth = addAuthForTests();
         var gameRequest = new CreateGameRequest(auth.authToken(), "");
@@ -50,7 +50,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("List Games Valid Test")
+    @DisplayName("List Games Valid")
     public void listGames() throws DataAccessException {
         var auth = addAuthForTests();
 
@@ -68,7 +68,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("List Games Unauthorized Test")
+    @DisplayName("List Games Unauthorized")
     public void listGamesUnauthorized() {
         var result = gameService.listGames("BAD TOKEN");
 
@@ -76,7 +76,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("Delete All Games Valid Test")
+    @DisplayName("Delete All Games")
     public void deleteAllGames() throws DataAccessException {
         var auth = addAuthForTests();
         gameService.addGame(new CreateGameRequest(auth.authToken(), ""));
@@ -90,7 +90,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("Join Game Valid Test")
+    @DisplayName("Join Game Valid")
     public void joinGame() throws DataAccessException {
         var auth = addAuthForTests();
         var user = addUserForTests();
@@ -108,7 +108,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("Join Game Unauthorized Test")
+    @DisplayName("Join Game Unauthorized")
     public void unAuthorizedJoinGame() {
         var game = addGameForTests();
         var joinReq = new JoinGameRequest(ChessGame.TeamColor.BLACK, game.gameID(), "BAD TOKEN");
@@ -118,7 +118,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("Join Game Bad ID Test")
+    @DisplayName("Join Game Bad ID")
     public void badIDJoinGame() throws DataAccessException {
         var auth = addAuthForTests();
         var joinReq = new JoinGameRequest(ChessGame.TeamColor.BLACK, 999, auth.authToken());
@@ -128,7 +128,7 @@ public class GameServiceTests {
     }
 
     @Test
-    @DisplayName("Join Game Already Taken Test")
+    @DisplayName("Join Game Already Taken")
     public void alreadyTakenJoinGame() throws DataAccessException {
         var auth = addAuthForTests();
         addUserForTests();
