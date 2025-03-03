@@ -66,10 +66,10 @@ public class AuthServiceTests {
     @Test
     @DisplayName("Add Auth Bad")
     public void badAddAuth() throws DataAccessException {
-        var auth = authService.addAuth("testUser");
-        var retrieved = authService.getAuthByID(auth.authToken());
+        String nullUsername = null;
+        var auth = authService.addAuth(nullUsername);
 
-        assertEquals(auth, retrieved);
+        assertNull(auth);
     }
 
     @Test
