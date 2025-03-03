@@ -131,7 +131,7 @@ public class GameServiceTests {
     @DisplayName("Join Game Already Taken Test")
     public void alreadyTakenJoinGame() throws DataAccessException {
         var auth = addAuthForTests();
-        var user = addUserForTests();
+        addUserForTests();
         var game = addGameForTests();
         var joinReq = new JoinGameRequest(ChessGame.TeamColor.BLACK, game.gameID(), auth.authToken());
         gameService.joinGame(joinReq);

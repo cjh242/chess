@@ -5,11 +5,13 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import request.*;
+import result.Result;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Server {
@@ -126,9 +128,14 @@ public class Server {
     }
 
     private Object deleteAll(Request req, Response res) {
-        gameService.deleteAllGames();
-        authService.deleteAllAuths();
-        userService.deleteAllUsers();
+        var results = new ArrayList<Result>();
+        results.add(gameService.deleteAllGames());
+        results.add(authService.deleteAllAuths());
+        results.add(userService.deleteAllUsers());
+        if(results.stream().anyMatch(x -> x.code() == 500)){
+            res.status(500);
+            return new Gson().toJson(Map.of("message", "Error: Failed to delete data"));
+        }
         return "";
     }
 
