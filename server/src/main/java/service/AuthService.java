@@ -45,7 +45,7 @@ public class AuthService {
     }
 
     public AuthData addAuth(String username) throws DataAccessException {
-        if(username == null || username == "") {
+        if(username == null || username.isEmpty()) {
             return null;
         }
         return authDao.addAuth(username);

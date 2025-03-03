@@ -62,7 +62,6 @@ public class AuthServiceTests {
         assertEquals(auth, retrieved);
     }
 
-    // TODO: FINISH THIS TEST
     @Test
     @DisplayName("Add Auth Bad")
     public void badAddAuth() throws DataAccessException {
