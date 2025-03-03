@@ -1,10 +1,12 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.IAuthDAO;
 import dataobjects.AuthData;
-import exception.ResponseException;
 import request.LogoutRequest;
 import result.Result;
+
+import java.util.Objects;
 
 public class AuthService {
     private final IAuthDAO authDao;
@@ -15,7 +17,8 @@ public class AuthService {
 
     public Result logout(LogoutRequest logout) {
         try {
-            if (isAuthValid(logout.authToken())) {
+            var auth = getAuthByID(logout.authToken());
+            if (isAuthValid(auth)) {
                 authDao.deleteAuth(logout.authToken());
                 return new Result(200);
             }
@@ -25,20 +28,23 @@ public class AuthService {
         }
     }
 
-    public boolean isAuthValid(String authToken) {
+    public boolean isAuthValid(AuthData auth) {
         try {
-            var auth = authDao.getAuthByToken(authToken);
-            return auth != null;
+            var retrievedAuth = authDao.getAuthByToken(auth.authToken());
+            if (retrievedAuth != null && Objects.equals(auth.username(), retrievedAuth.username())) {
+                return true;
+            }
         } catch (Exception ex) {
             return false;
         }
+        return false;
     }
 
-    public AuthData getAuthByID(String authToken) throws ResponseException {
+    public AuthData getAuthByID(String authToken) throws DataAccessException {
         return authDao.getAuthByToken(authToken);
     }
 
-    public AuthData addAuth(String username) throws ResponseException {
+    public AuthData addAuth(String username) throws DataAccessException {
         return authDao.addAuth(username);
     }
 

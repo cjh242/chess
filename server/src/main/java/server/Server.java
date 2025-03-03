@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
-import exception.ResponseException;
 import request.*;
 import result.Result;
 import service.AuthService;
@@ -45,7 +44,7 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.delete("/db", this::deleteAll);
         Spark.delete("/session", this::logout);
-        Spark.exception(ResponseException.class, this::exceptionHandler);
+        //Spark.exception(ResponseException.class, this::exceptionHandler);
 
         //This line initializes the server and can be removed once you have a functioning endpoint
 //        Spark.init();
@@ -59,10 +58,10 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private void exceptionHandler(ResponseException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
-        res.body(ex.toJson());
-    }
+//    private void exceptionHandler(ResponseException ex, Request req, Response res) {
+//        res.status(ex.StatusCode());
+//        res.body(ex.toJson());
+//    }
 
     private Object register(Request req, Response res) {
         var registerReq = new Gson().fromJson(req.body(), RegisterRequest.class);
@@ -78,7 +77,7 @@ public class Server {
         return new Gson().toJson(user);
     }
 
-    private Object login(Request req, Response res) throws ResponseException {
+    private Object login(Request req, Response res) {
         var loginReq = new Gson().fromJson(req.body(), LoginRequest.class);
         var loginRes = userService.login(loginReq);
         if(loginRes.code() == 401){
@@ -88,7 +87,7 @@ public class Server {
         return new Gson().toJson(loginRes);
     }
 
-    private Object createGame(Request req, Response res) throws ResponseException {
+    private Object createGame(Request req, Response res) {
         var gameReq = new Gson().fromJson(req.body(), CreateGameRequest.class);
         gameReq = gameReq.withAuthToken(req.headers("Authorization"));
         var game = gameService.addGame(gameReq);
@@ -99,17 +98,32 @@ public class Server {
         return new Gson().toJson(game);
     }
 
-    private Object joinGame(Request req, Response res) throws ResponseException {
+    private Object joinGame(Request req, Response res) {
         var joinReq = new Gson().fromJson(req.body(), JoinGameRequest.class);
         joinReq = joinReq.withAuthToken(req.headers("Authorization"));
         var game = gameService.joinGame(joinReq);
+        if (game.code() == 401){
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        }
+        else if (game.code() == 403){
+            res.status(403);
+            return new Gson().toJson(Map.of("message", "Error: already taken"));
+        }
+        else if (game.code() == 400){
+            res.status(400);
+            return new Gson().toJson(Map.of("message", "Error: bad request"));
+        }
         return new Gson().toJson(game);
     }
 
-    private Object listGames(Request req, Response res) throws ResponseException {
-        var list = gameService.listGames(req.headers("Authorization"));
-        var response = Map.of("games", list);
-        return new Gson().toJson(response);
+    private Object listGames(Request req, Response res) {
+        var result = gameService.listGames(req.headers("Authorization"));
+        if (result.code() == 401) {
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        }
+        return new Gson().toJson(result);
     }
 
     private Object deleteAll(Request req, Response res) {

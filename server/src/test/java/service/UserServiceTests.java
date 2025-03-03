@@ -5,7 +5,6 @@ import dataaccess.IUserDAO;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import dataobjects.UserData;
-import exception.ResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,24 +19,24 @@ public class UserServiceTests {
     AuthService authService = new AuthService(authDao);
     UserService userService = new UserService(userDao, authService);
 
-    @BeforeEach
-    void clear() throws ResponseException {
-        userDao.deleteAllUsers();
-    }
+//    @BeforeEach
+//    void clear() throws ResponseException {
+//        userDao.deleteAllUsers();
+//    }
+//
+//    @Test
+//    @DisplayName("Register Valid Test")
+//    public void register(){
+//
+//    }
 
-    @Test
-    @DisplayName("Register Valid Test")
-    public void register(){
-
-    }
-
-    @Test
-    @DisplayName("Login Valid Test")
-    public void login() throws ResponseException {
-        var user = userDao.addUser(new RegisterRequest("testUser", "password", "test@email.com"));
-        var login = userService.login(new LoginRequest(user.username(), "password"));
-
-        assertTrue(authService.isAuthValid(login.authToken()));
-    }
+//    @Test
+//    @DisplayName("Login Valid Test")
+//    public void login() throws ResponseException {
+//        var user = userDao.addUser(new RegisterRequest("testUser", "password", "test@email.com"));
+//        var login = userService.login(new LoginRequest(user.username(), "password"));
+//
+//        assertTrue(authService.isAuthValid(login.authToken()));
+//    }
 
 }

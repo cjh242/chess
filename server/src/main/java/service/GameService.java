@@ -1,15 +1,14 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.IGameDAO;
 import dataobjects.GameData;
-import exception.ResponseException;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import result.Result;
-
-import java.util.Collection;
 
 public class GameService {
     private final IGameDAO gameDao;
@@ -20,36 +19,59 @@ public class GameService {
         this.authService = authService;
     }
 
-    public GameData joinGame(JoinGameRequest join) throws ResponseException {
-        var game = findGameByID(join.gameID());
-        var auth = authService.getAuthByID(join.authToken());
-        if(join.playerColor() == ChessGame.TeamColor.BLACK){
-            game = game.addBlackUsername(auth.username());
+    public Result joinGame(JoinGameRequest join) {
+        try {
+            var game = findGameByID(join.gameID());
+            var auth = authService.getAuthByID(join.authToken());
+            if(game == null){
+                return new Result(400);
+            }
+            else if(authService.isAuthValid(auth)){
+                if(join.playerColor() == ChessGame.TeamColor.BLACK){
+                    if(game.blackUsername() == null) {
+                        game = game.addBlackUsername(auth.username());
+                    } else {
+                        return new Result(403);
+                    }
+                }
+                else if(join.playerColor() == ChessGame.TeamColor.WHITE){
+                    if(game.whiteUsername() == null) {
+                        game = game.addWhiteUsername(auth.username());
+                    } else {
+                        return new Result(403);
+                    }
+                }
+                else {
+                    return new Result(400);
+                }
+                update(game);
+                return new Result(200);
+            }
+            else {
+                return new Result(401);
+            }
+        } catch (Exception ex) {
+            return new Result(500);
         }
-        else{
-            game = game.addWhiteUsername(auth.username());
-        }
-        return update(game);
+
     }
 
-    private GameData findGameByID(int gameID) throws ResponseException {
-        return gameDao.findByID(gameID);
-    }
-
-    private GameData update(GameData game) throws ResponseException {
-        return gameDao.update(game);
-    }
-
-    public Collection<GameData> listGames(String authToken) throws ResponseException {
-        if(authService.isAuthValid(authToken)){
-            return gameDao.listGames();
+    public ListGamesResult listGames(String authToken) {
+        try {
+            var auth = authService.getAuthByID(authToken);
+            if(authService.isAuthValid(auth)){
+                return new ListGamesResult(gameDao.listGames(), 200);
+            }
+            return new ListGamesResult(null, 401);
+        } catch (Exception ex){
+            return new ListGamesResult(null, 500);
         }
-        return null;
     }
 
     public CreateGameResult addGame(CreateGameRequest game) {
         try {
-            if(authService.isAuthValid(game.authToken())){
+            var auth = authService.getAuthByID(game.authToken());
+            if(authService.isAuthValid(auth)){
                 var createdGame = gameDao.addGame(game.gameName());
                 return new CreateGameResult(createdGame.gameID(), 200);
             }
@@ -66,5 +88,14 @@ public class GameService {
         } catch (Exception ex) {
             return new Result(500);
         }
+    }
+
+    //private helpers
+    private GameData findGameByID(int gameID) throws DataAccessException {
+        return gameDao.findByID(gameID);
+    }
+
+    private GameData update(GameData game) throws DataAccessException {
+        return gameDao.update(game);
     }
 }

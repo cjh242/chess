@@ -1,15 +1,14 @@
 package dataaccess;
 
 import dataobjects.GameData;
-import exception.ResponseException;
 
 import java.util.Collection;
 
 public interface IGameDAO {
 
-    Collection<GameData> listGames() throws ResponseException;
-    GameData addGame(String gameName) throws ResponseException;
-    void deleteAllGames() throws ResponseException;
-    GameData findByID(int gameID) throws ResponseException;
+    Collection<GameData> listGames() throws DataAccessException;
+    GameData addGame(String gameName) throws DataAccessException;
+    void deleteAllGames() throws DataAccessException;
+    GameData findByID(int gameID) throws DataAccessException;
     public GameData update(GameData game);
 }
