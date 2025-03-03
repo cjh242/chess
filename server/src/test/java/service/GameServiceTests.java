@@ -18,10 +18,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {
-    static final IGameDAO gameDao = new MemoryGameDAO();
-    static final IUserDAO userDao = new MemoryUserDAO();
-    static final AuthService authService = new AuthService( new MemoryAuthDAO());
-    static final GameService gameService = new GameService(gameDao, authService);
+    private final IGameDAO gameDao = new MemoryGameDAO();
+    private final IUserDAO userDao = new MemoryUserDAO();
+    private final AuthService authService = new AuthService( new MemoryAuthDAO());
+    private final GameService gameService = new GameService(gameDao, authService);
 
     @BeforeEach
     void clear() {
