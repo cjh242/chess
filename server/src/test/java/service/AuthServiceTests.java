@@ -49,7 +49,7 @@ public class AuthServiceTests {
 
     @Test
     @DisplayName("IsAuthValid Invalid Test")
-    public void badIsAuthValid() throws DataAccessException {
+    public void badIsAuthValid() {
         assertFalse(authService.isAuthValid(new AuthData("BAD TOKEN", "testUser")));
     }
 

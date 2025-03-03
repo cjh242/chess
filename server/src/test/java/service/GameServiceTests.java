@@ -24,7 +24,7 @@ public class GameServiceTests {
     static final GameService gameService = new GameService(gameDao, authService);
 
     @BeforeEach
-    void clear() throws DataAccessException {
+    void clear() {
         gameService.deleteAllGames();
         authService.deleteAllAuths();
     }
@@ -149,7 +149,7 @@ public class GameServiceTests {
         return userDao.addUser(new RegisterRequest("testUser", "password", "test@email.com"));
     }
 
-    private GameData addGameForTests() throws DataAccessException {
+    private GameData addGameForTests() {
         var game = new GameData(1, null, null, "test");
         //calling update here will actually add the game, and skip normal adding protocols
         return gameDao.update(game);

@@ -95,7 +95,7 @@ public class GameService {
         return gameDao.findByID(gameID);
     }
 
-    private GameData update(GameData game) throws DataAccessException {
+    private GameData update(GameData game) {
         return gameDao.update(game);
     }
 }
