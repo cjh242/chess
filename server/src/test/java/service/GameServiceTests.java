@@ -109,7 +109,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("Join Game Unauthorized Test")
-    public void unAuthorizedJoinGame() throws DataAccessException {
+    public void unAuthorizedJoinGame() {
         var game = addGameForTests();
         var joinReq = new JoinGameRequest(ChessGame.TeamColor.BLACK, game.gameID(), "BAD TOKEN");
         var result = gameService.joinGame(joinReq);
