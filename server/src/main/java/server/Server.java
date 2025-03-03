@@ -5,7 +5,6 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import request.*;
-import result.Result;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -127,9 +126,9 @@ public class Server {
     }
 
     private Object deleteAll(Request req, Response res) {
-        var gameResult = gameService.deleteAllGames();
-        var authResult = authService.deleteAllAuths();
-        var userResult = userService.deleteAllUsers();
+        gameService.deleteAllGames();
+        authService.deleteAllAuths();
+        userService.deleteAllUsers();
         return "";
     }
 

@@ -84,7 +84,7 @@ public class AuthServiceTests {
     @Test
     @DisplayName("Get By Id InValid Test")
     public void badGetByID() throws DataAccessException {
-        var auth = authService.addAuth("testUser");
+        authService.addAuth("testUser");
         var retrievedAuth = authService.getAuthByID("WRONG TOKEN");
 
         assertNull(retrievedAuth);

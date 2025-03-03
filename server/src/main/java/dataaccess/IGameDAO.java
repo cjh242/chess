@@ -10,5 +10,5 @@ public interface IGameDAO {
     GameData addGame(String gameName) throws DataAccessException;
     void deleteAllGames() throws DataAccessException;
     GameData findByID(int gameID) throws DataAccessException;
-    public GameData update(GameData game);
+    GameData update(GameData game);
 }
