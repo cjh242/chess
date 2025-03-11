@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import dataobjects.GameData;
 
 import java.util.Collection;
@@ -23,7 +24,7 @@ public class MemoryGameDAO implements IGameDAO {
     }
 
     public GameData addGame(String gameName) {
-        var game = new GameData(nextId++, null, null, gameName);
+        var game = new GameData(nextId++, null, null, gameName, new ChessGame());
 
         games.put(game.gameID(), game);
         return game;

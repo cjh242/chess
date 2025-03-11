@@ -11,6 +11,7 @@ public class DatabaseStartup {
               `whiteUsername` varchar(256) NOT NULL,
               `blackUsername` varchar(256) NOT NULL,
               `gameName` varchar(256) NOT NULL,
+              'game' varchar(65535) NOT NULL
               PRIMARY KEY (`gameID`),
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             
