@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.IUserDAO;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
@@ -25,7 +26,8 @@ public class UserService {
             if(userDao.getUserByUsername(registerRequest.username()) != null){
                 return new LoginResult(null, null, 403);
             }
-            var user = userDao.addUser(registerRequest);
+            var hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
+            var user = userDao.addUser(registerRequest.withHashedPassword(hashedPassword));
             var login = new LoginRequest(user.username(), user.password());
             return login(login);
         } catch (Exception ex) {
@@ -36,7 +38,8 @@ public class UserService {
     public LoginResult login(LoginRequest loginRequest) {
         try {
             var user = userDao.getUserByUsername(loginRequest.username());
-            if(user == null || !Objects.equals(user.password(), loginRequest.password())){
+            var hashedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
+            if(user == null || !Objects.equals(hashedPassword, loginRequest.password())){
                 //wrong password path or no user path
                 return new LoginResult(null, null, 401);
             }
