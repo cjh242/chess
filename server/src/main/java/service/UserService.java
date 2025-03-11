@@ -28,7 +28,7 @@ public class UserService {
             }
             var hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
             var user = userDao.addUser(registerRequest.withHashedPassword(hashedPassword));
-            var login = new LoginRequest(user.username(), user.password());
+            var login = new LoginRequest(user.username(), registerRequest.password());
             return login(login);
         } catch (Exception ex) {
             return new LoginResult(null, null, 500);
@@ -38,8 +38,7 @@ public class UserService {
     public LoginResult login(LoginRequest loginRequest) {
         try {
             var user = userDao.getUserByUsername(loginRequest.username());
-            var hashedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
-            if(user == null || !Objects.equals(hashedPassword, loginRequest.password())){
+            if(user == null || !BCrypt.checkpw(loginRequest.password(), user.password())){
                 //wrong password path or no user path
                 return new LoginResult(null, null, 401);
             }

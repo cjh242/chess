@@ -59,9 +59,9 @@ public class GameServiceTests {
         var game3 = gameService.addGame(new CreateGameRequest(auth.authToken(), ""));
 
         List<GameData> expected = new ArrayList<>();
-        expected.add(new GameData(game1.gameID(), null, null, ""));
-        expected.add(new GameData(game2.gameID(), null, null, ""));
-        expected.add(new GameData(game3.gameID(), null, null, ""));
+        expected.add(new GameData(game1.gameID(), null, null, "", new ChessGame()));
+        expected.add(new GameData(game2.gameID(), null, null, "", new ChessGame()));
+        expected.add(new GameData(game3.gameID(), null, null, "", new ChessGame()));
 
         var actual = gameService.listGames(auth.authToken()).games();
         assertIterableEquals(expected, actual);
@@ -150,7 +150,7 @@ public class GameServiceTests {
     }
 
     private GameData addGameForTests() {
-        var game = new GameData(1, null, null, "test");
+        var game = new GameData(1, null, null, "test", new ChessGame());
         //calling update here will actually add the game, and skip normal adding protocols
         return gameDao.update(game);
     }
