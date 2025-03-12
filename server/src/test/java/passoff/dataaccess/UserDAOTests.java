@@ -28,5 +28,15 @@ public class UserDAOTests {
 
     }
 
+    @Test
+    @DisplayName("Add User Null")
+    public void addUserBad() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {
+            userDao.addUser(new RegisterRequest(null, null, null));
+        });
+    }
+
+
+
 
 }

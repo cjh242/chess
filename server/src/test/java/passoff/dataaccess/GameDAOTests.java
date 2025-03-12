@@ -31,7 +31,7 @@ public class GameDAOTests {
     @Test
     @DisplayName("Add Game Null")
     public void addGameBad() {
-        Exception exception = assertThrows(DataAccessException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             gameDao.addGame(null);
         });
     }
