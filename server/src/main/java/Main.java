@@ -10,14 +10,11 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Server: " + piece);
 
-        IGameDAO gameData = new MemoryGameDAO();
-        IAuthDAO authData = new MemoryAuthDAO();
-        IUserDAO userData = new MemoryUserDAO();
-        var authService = new AuthService(authData);
-        var gameService = new GameService(gameData, authService);
-        var userService = new UserService(userData, authService);
-
-        var server = new Server(gameService, userService, authService);
-        server.run(8080);
+        try {
+            var server = new Server();
+            server.run(8080);
+        } catch (Exception ex) {
+            return;
+        }
     }
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class AuthDAO implements IAuthDAO{
     private final DatabaseAssistant dbAssist;
 
-    public AuthDAO() throws DataAccessException {
+    public AuthDAO() {
         this.dbAssist = new DatabaseAssistant();
         dbAssist.configureDatabase();
     }

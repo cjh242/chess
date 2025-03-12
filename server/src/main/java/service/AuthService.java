@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.IAuthDAO;
 import dataobjects.AuthData;
@@ -13,6 +14,10 @@ public class AuthService {
 
     public AuthService(IAuthDAO authDao){
         this.authDao = authDao;
+    }
+
+    public AuthService() {
+        this.authDao = new AuthDAO();
     }
 
     public Result logout(LogoutRequest logout) {

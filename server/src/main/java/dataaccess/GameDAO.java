@@ -13,7 +13,7 @@ import java.util.Collection;
 public class GameDAO implements IGameDAO{
     private final DatabaseAssistant dbAssist;
 
-    public GameDAO() throws DataAccessException {
+    public GameDAO() {
         this.dbAssist = new DatabaseAssistant();
         dbAssist.configureDatabase();
     }
@@ -59,7 +59,7 @@ public class GameDAO implements IGameDAO{
 
     public GameData findByID(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameId=?";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -75,7 +75,7 @@ public class GameDAO implements IGameDAO{
     }
 
     public GameData update(GameData game) throws DataAccessException {
-        var statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE primary_key_column=?;";
+        var statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?;";
         var json = new Gson().toJson(game);
         var id = dbAssist.executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json, game.gameID());
         return findByID(id);

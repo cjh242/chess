@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class UserDAO implements IUserDAO{
     private final DatabaseAssistant dbAssist;
 
-    public UserDAO() throws DataAccessException {
+    public UserDAO() {
         this.dbAssist = new DatabaseAssistant();
         dbAssist.configureDatabase();
     }

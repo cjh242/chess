@@ -109,7 +109,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("Join Game Unauthorized")
-    public void unAuthorizedJoinGame() {
+    public void unAuthorizedJoinGame() throws DataAccessException {
         var game = addGameForTests();
         var joinReq = new JoinGameRequest(ChessGame.TeamColor.BLACK, game.gameID(), "BAD TOKEN");
         var result = gameService.joinGame(joinReq);
@@ -149,7 +149,7 @@ public class GameServiceTests {
         return userDao.addUser(new RegisterRequest("testUser", "password", "test@email.com"));
     }
 
-    private GameData addGameForTests() {
+    private GameData addGameForTests() throws DataAccessException {
         var game = new GameData(1, null, null, "test", new ChessGame());
         //calling update here will actually add the game, and skip normal adding protocols
         return gameDao.update(game);

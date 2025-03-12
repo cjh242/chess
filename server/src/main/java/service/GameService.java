@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import dataaccess.IGameDAO;
 import dataobjects.GameData;
 import request.CreateGameRequest;
@@ -16,6 +17,11 @@ public class GameService {
 
     public GameService(IGameDAO gameDao, AuthService authService){
         this.gameDao = gameDao;
+        this.authService = authService;
+    }
+
+    public GameService(AuthService authService) {
+        this.gameDao = new GameDAO();
         this.authService = authService;
     }
 
@@ -95,7 +101,7 @@ public class GameService {
         return gameDao.findByID(gameID);
     }
 
-    private void update(GameData game) {
+    private void update(GameData game) throws DataAccessException {
         gameDao.update(game);
     }
 }
