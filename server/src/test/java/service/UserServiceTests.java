@@ -53,7 +53,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Login Wrong Password")
-    public void wrongPasswordLogin() throws DataAccessException {
+    public void wrongPasswordLogin() {
         var user = userService.register(new RegisterRequest("testUser", "password", "test@email.com"));
         authService.logout(new LogoutRequest(user.authToken()));
         var login = userService.login(new LoginRequest(user.username(), "WRONG PASSWORD"));

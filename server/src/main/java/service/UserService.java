@@ -1,6 +1,5 @@
 package service;
 
-import dataaccess.DataAccessException;
 import dataaccess.IUserDAO;
 import dataaccess.UserDAO;
 import org.mindrot.jbcrypt.BCrypt;
@@ -8,8 +7,6 @@ import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.Result;
-
-import java.util.Objects;
 
 public class UserService {
     private final IUserDAO userDao;

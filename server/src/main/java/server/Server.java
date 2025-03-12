@@ -1,10 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import request.*;
 import result.Result;
 import service.AuthService;

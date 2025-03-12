@@ -1,6 +1,5 @@
 package passoff.dataaccess;
 
-import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataobjects.GameData;
@@ -31,9 +30,7 @@ public class GameDAOTests {
     @Test
     @DisplayName("Add Game Null")
     public void addGameBad() {
-        assertThrows(DataAccessException.class, () -> {
-            gameDao.addGame(null);
-        });
+        assertThrows(DataAccessException.class, () -> gameDao.addGame(null));
     }
 
     @Test
@@ -54,9 +51,7 @@ public class GameDAOTests {
 
         var game = gameDao.addGame("NEW_GAME");
         var updatedGame = new GameData(game.gameID(), null, null, null, null);
-        assertThrows(DataAccessException.class, () -> {
-            gameDao.update(updatedGame);
-        });
+        assertThrows(DataAccessException.class, () -> gameDao.update(updatedGame));
     }
 
     @Test

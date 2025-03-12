@@ -5,7 +5,6 @@ import dataaccess.DataAccessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import request.CreateGameRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,11 +30,9 @@ public class AuthDAOTests {
 
     @Test
     @DisplayName("Add Auth Fails")
-    public void addAuthBad() throws DataAccessException {
+    public void addAuthBad() {
 
-        Exception exception = assertThrows(DataAccessException.class, () -> {
-            authDao.addAuth(null);
-        });
+        assertThrows(DataAccessException.class, () -> authDao.addAuth(null));
     }
 
     @Test
