@@ -10,7 +10,7 @@ public class Main {
             var server = new Server();
             server.run(8080);
         } catch (Exception ex) {
-            return;
+            System.err.println("Error starting and running server");
         }
     }
 }
