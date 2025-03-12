@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,7 +42,8 @@ public class UserServiceTests {
     @Test
     @DisplayName("Login Valid")
     public void login() throws DataAccessException {
-        var user = userDao.addUser(new RegisterRequest("testUser", "password", "test@email.com"));
+        var user = userService.register(new RegisterRequest("testUser", "password", "test@email.com"));
+        authService.logout(new LogoutRequest(user.authToken()));
         var login = userService.login(new LoginRequest(user.username(), "password"));
         var auth = authService.getAuthByID(login.authToken());
 
@@ -52,7 +54,8 @@ public class UserServiceTests {
     @Test
     @DisplayName("Login Wrong Password")
     public void wrongPasswordLogin() throws DataAccessException {
-        var user = userDao.addUser(new RegisterRequest("testUser", "password", "test@email.com"));
+        var user = userService.register(new RegisterRequest("testUser", "password", "test@email.com"));
+        authService.logout(new LogoutRequest(user.authToken()));
         var login = userService.login(new LoginRequest(user.username(), "WRONG PASSWORD"));
 
         assertNull(login.authToken());
