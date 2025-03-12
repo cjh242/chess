@@ -47,6 +47,14 @@ public class UserDAOTests {
 
     }
 
+    @Test
+    @DisplayName("Get User Null")
+    public void getByUsernameBad() throws DataAccessException {
+        var retrievedUser = userDao.getUserByUsername("TEST_USER");
+
+        assertNull(retrievedUser);
+    }
+
 
 
 
