@@ -36,6 +36,17 @@ public class UserDAOTests {
         });
     }
 
+    @Test
+    @DisplayName("Get User")
+    public void getByUsername() throws DataAccessException {
+        var user = userDao.addUser(new RegisterRequest("TEST_USER", "PASSWORD", "TEST@EMAIL.COM"));
+
+        var retrievedUser = userDao.getUserByUsername("TEST_USER");
+
+        assertEquals(user, retrievedUser);
+
+    }
+
 
 
 
