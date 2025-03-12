@@ -1,4 +1,4 @@
-package passoff.dataaccess;
+package dataaccess.dataaccess;
 
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
