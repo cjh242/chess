@@ -1,3 +1,6 @@
+import client.ServerFacade;
+import request.RegisterRequest;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
@@ -11,6 +14,8 @@ public class ChessClient {
     public void RunChessClient(){
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
+
+        ServerFacade server = new ServerFacade();
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
@@ -37,10 +42,12 @@ public class ChessClient {
                         System.out.println("Usage: register <USERNAME> <PASSWORD> <EMAIL>");
                         break;
                     }
-                    String regUsername = parts[1];
-                    String regPassword = parts[2];
-                    String regEmail = parts[3];
-                    System.out.println("Registering user: " + regUsername + " with email: " + regEmail);
+                    try {
+                        var result = server.register(new RegisterRequest(parts[1], parts[2], parts[3]));
+                        System.out.println(result);
+                    } catch (Exception ex) {
+                        System.out.println("Failed to register user");
+                    }
                     break;
 
                 case "login":
@@ -51,6 +58,7 @@ public class ChessClient {
                     String loginUsername = parts[1];
                     String loginPassword = parts[2];
                     System.out.println("Logging in user: " + loginUsername);
+
                     break;
 
                 case "quit":
