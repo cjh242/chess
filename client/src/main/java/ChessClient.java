@@ -16,8 +16,8 @@ public class ChessClient {
 
     public void RunChessClient(){
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        boolean loggedIn = false;
+        boolean isRunning = true;
+        boolean isLoggedIn = false;
         String authToken = null;
         int gameId = 0;
 
@@ -25,8 +25,8 @@ public class ChessClient {
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
-        while (running) {
-            System.out.print(loggedIn ? "\n[LOGGED_IN] >>> " : "\n[LOGGED_OUT] >>> ");
+        while (isRunning) {
+            System.out.print(isLoggedIn ? "\n[LOGGED_IN] >>> " : "\n[LOGGED_OUT] >>> ");
             String input = scanner.nextLine().trim();
 
             // Split input into command and arguments
@@ -38,10 +38,18 @@ public class ChessClient {
             String loginString = "Please first login or register";
             switch (command) {
                 case "help":
-                    System.out.println("  register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
-                    System.out.println("  login <USERNAME> <PASSWORD> - to play chess");
-                    System.out.println("  quit - playing chess");
-                    System.out.println("  help - with possible commands");
+                    if (isLoggedIn) {
+                        System.out.println("  create <NAME>  - a game");
+                        System.out.println("  list           - games");
+                        System.out.println("  join <ID> [WHITE|BLACK]  - a game");
+                        System.out.println("  observe <ID>   - a game");
+                        System.out.println("  logout         - when you are done");
+                    } else {
+                        System.out.println("  register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
+                        System.out.println("  login <USERNAME> <PASSWORD>  - to play chess");
+                    }
+                    System.out.println("  quit           - playing chess");
+                    System.out.println("  help           - with possible commands");
                     break;
 
                 case "register":
@@ -53,7 +61,7 @@ public class ChessClient {
                         var result = server.register(new RegisterRequest(parts[1], parts[2], parts[3]));
                         System.out.println(result.message());
                         if (result.isOk()){
-                            loggedIn = true;
+                            isLoggedIn = true;
                             authToken = result.authToken();
                         }
                     } catch (Exception ex) {
@@ -70,7 +78,7 @@ public class ChessClient {
                         var result = server.login(new LoginRequest(parts[1], parts[2]));
                         System.out.println(result.message());
                         if (result.isOk()){
-                            loggedIn = true;
+                            isLoggedIn = true;
                             authToken = result.authToken();
                         }
                     } catch (Exception ex) {
@@ -80,7 +88,7 @@ public class ChessClient {
                     break;
 
                 case "logout":
-                    if(!loggedIn){
+                    if(!isLoggedIn){
                         System.out.println(loginString);
                         break;
                     }
@@ -92,7 +100,7 @@ public class ChessClient {
                         var result = server.logout(new LogoutRequest(authToken));
                         System.out.println(result.message());
                         if (result.isOk()){
-                            loggedIn = false;
+                            isLoggedIn = false;
                             authToken = null;
                         }
                     } catch (Exception ex) {
@@ -100,7 +108,7 @@ public class ChessClient {
                     }
                     break;
                 case "create":
-                    if(!loggedIn){
+                    if(!isLoggedIn){
                         System.out.println(loginString);
                     }
                     if (parts.length != 2){
@@ -115,7 +123,7 @@ public class ChessClient {
                     }
                     break;
                 case "list":
-                    if(!loggedIn){
+                    if(!isLoggedIn){
                         System.out.println(loginString);
                     }
                     if (parts.length != 1){
@@ -130,7 +138,7 @@ public class ChessClient {
                     }
                     break;
                 case "observe":
-                    if(!loggedIn){
+                    if(!isLoggedIn){
                         System.out.println(loginString);
                     }
                     if (parts.length != 2){
@@ -152,7 +160,7 @@ public class ChessClient {
                     break;
                 case "play":
                     ChessGame.TeamColor teamColor = BLACK;
-                    if(!loggedIn){
+                    if(!isLoggedIn){
                         System.out.println(loginString);
                     }
                     if (parts.length != 3){
@@ -179,7 +187,7 @@ public class ChessClient {
                     break;
                 case "quit":
                     System.out.println("Exiting chess client...");
-                    running = false;
+                    isRunning = false;
                     break;
 
                 default:
