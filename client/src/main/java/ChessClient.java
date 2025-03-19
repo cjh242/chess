@@ -160,7 +160,7 @@ public class ChessClient {
                     }
                     break;
                 case "play":
-                    ChessGame.TeamColor teamColor = BLACK;
+                    ChessGame.TeamColor teamColor;
                     if(!isLoggedIn){
                         System.out.println(loginString);
                     }

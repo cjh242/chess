@@ -161,7 +161,7 @@ public class ServerFacade {
 
 
     private static Object readResponseBody(HttpURLConnection http) throws IOException {
-        Object responseBody = "";
+        Object responseBody;
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             responseBody = new Gson().fromJson(inputStreamReader, Map.class);
