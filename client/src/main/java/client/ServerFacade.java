@@ -1,9 +1,9 @@
 package client;
 
 import com.google.gson.Gson;
-import request.LoginRequest;
-import request.RegisterRequest;
+import request.*;
 import result.CreateGameResult;
+import result.HttpResult;
 import result.ListGamesResult;
 import result.LoginResult;
 
@@ -18,7 +18,7 @@ public class ServerFacade {
 
     private final String baseUrl = "http://localhost:8080/";
 
-    public String login(LoginRequest login) throws Exception{
+    public HttpResult login(LoginRequest login) throws Exception{
         URI uri = new URI(baseUrl + "session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
@@ -37,9 +37,10 @@ public class ServerFacade {
         // Handle bad HTTP status
         var status = http.getResponseCode();
         LoginResult result = (LoginResult)readResponseBody(http);
-        return getResultString(status, result);
+        var resultString = status >= 200 && status < 300 ? "Logged in as" + result.username() : getResultString(status);
+        return new HttpResult(status == 200, resultString);
     }
-    public String register(RegisterRequest register) throws Exception{
+    public HttpResult register(RegisterRequest register) throws Exception{
         URI uri = new URI(baseUrl + "user");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
@@ -60,39 +61,63 @@ public class ServerFacade {
         // Handle bad HTTP status
         var status = http.getResponseCode();
         LoginResult result = (LoginResult)readResponseBody(http);
-        return getResultString(status, result);
+        var resultString = status >= 200 && status < 300 ? "Logged in as" + result.username() : getResultString(status);
+        return new HttpResult(status == 200, resultString, result.authToken());
     }
 
-    private static String getResultString(int status, LoginResult result) {
+    public HttpResult logout(LogoutRequest logout) throws Exception{
+        URI uri = new URI(baseUrl + "user");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        http.setRequestProperty("authorization", logout.authToken());
+
+        http.connect();
+
+        // Handle bad HTTP status
+        var status = http.getResponseCode();
+        var resultString = status >= 200 && status < 300 ? "Logged out" : getResultString(status);
+        return new HttpResult(status == 200, resultString);
+    }
+
+    private static String getResultString(int status) {
         var resultString = "";
-        if ( status >= 200 && status < 300) {
-            resultString = "Logged in as" + result.username();
-        } else {
-            if(status == 500){
-                resultString = "An unknown error occurred with the server.";
-            }
-            else if(status == 400){
-                resultString = "There was an issue with your request. Please check usage constraints";
-            }
-            else if(status == 401){
-                resultString = "Wrong username or password";
-            }
-            else if(status == 403){
-                resultString = "Username already taken. Please choose a different username";
-            }
-            else {
-                resultString = "An unknown error occurred.";
-            }
+        if(status == 500){
+            resultString = "An unknown error occurred with the server.";
+        }
+        else if(status == 400){
+            resultString = "There was an issue with your request. Please check usage constraints";
+        }
+        else if(status == 401){
+            resultString = "Wrong username or password";
+        }
+        else if(status == 403){
+            resultString = "Username already taken. Please choose a different username";
+        }
+        else {
+            resultString = "An unknown error occurred.";
+        }
 //            try (InputStream in = http.getErrorStream()) {
 //                System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
 //            }
-        }
         return resultString;
     }
 
-    public CreateGameResult createGame(){
-        return new CreateGameResult(0, 0);
+    public HttpResult createGame(CreateGameRequest request){
+        return new HttpResult(false, "");
     }
+
+    public HttpResult playGame(JoinGameRequest request){
+        return new HttpResult(false, "");
+    }
+
+    public HttpResult listGames(){
+        return new HttpResult(false, "");
+    }
+    public HttpResult observeGame(int gameNumber){
+        return new HttpResult(false, "");
+    }
+
 
     private static Object readResponseBody(HttpURLConnection http) throws IOException {
         Object responseBody = "";

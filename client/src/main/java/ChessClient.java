@@ -1,21 +1,25 @@
+import chess.ChessGame;
 import client.ServerFacade;
-import request.LoginRequest;
-import request.RegisterRequest;
+import request.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+import static chess.ChessGame.TeamColor.BLACK;
+
 public class ChessClient {
 
     private final static Collection<String> preLoginCommands = List.of("help", "quit", "login", "register");
     private final static Collection<String> postLoginCommands =
-            List.of("help", "logout", "create game", "list games", "play game", "observe game");
+            List.of("help", "logout", "create", "list", "play", "observe");
 
     public void RunChessClient(){
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         boolean loggedIn = false;
+        String authToken = null;
+        int gameId = 0;
 
         ServerFacade server = new ServerFacade();
 
@@ -31,6 +35,7 @@ public class ChessClient {
 
             String command = parts[0].toLowerCase(); // First part is the command
 
+            String loginString = "Please first login or register";
             switch (command) {
                 case "help":
                     System.out.println("  register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
@@ -46,7 +51,11 @@ public class ChessClient {
                     }
                     try {
                         var result = server.register(new RegisterRequest(parts[1], parts[2], parts[3]));
-                        System.out.println(result);
+                        System.out.println(result.message());
+                        if (result.isOk()){
+                            loggedIn = true;
+                            authToken = result.authToken();
+                        }
                     } catch (Exception ex) {
                         System.out.println("Failed to register user");
                     }
@@ -59,13 +68,105 @@ public class ChessClient {
                     }
                     try {
                         var result = server.login(new LoginRequest(parts[1], parts[2]));
-                        System.out.println(result);
+                        System.out.println(result.message());
+                        if (result.isOk()){
+                            loggedIn = true;
+                            authToken = result.authToken();
+                        }
                     } catch (Exception ex) {
                         System.out.println("Failed to login user");
                     }
 
                     break;
 
+                case "logout":
+                    if(!loggedIn){
+                        System.out.println(loginString);
+                        break;
+                    }
+                    if (parts.length != 1){
+                        System.out.println("Usage: logout");
+                        break;
+                    }
+                    try {
+                        var result = server.logout(new LogoutRequest(authToken));
+                        System.out.println(result.message());
+                        if (result.isOk()){
+                            loggedIn = false;
+                            authToken = null;
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Failed to login user");
+                    }
+                    break;
+                case "create":
+                    if(!loggedIn){
+                        System.out.println(loginString);
+                    }
+                    if (parts.length != 2){
+                        System.out.println("Usage: create <GAME_NAME>");
+                        break;
+                    }
+                    try {
+                        var result = server.createGame(new CreateGameRequest(authToken, parts[1]));
+                        System.out.println(result.message());
+                    } catch (Exception ex) {
+                        System.out.println("Failed to login user");
+                    }
+                    break;
+                case "list":
+                    if(!loggedIn){
+                        System.out.println(loginString);
+                    }
+                    break;
+                case "observe":
+                    if(!loggedIn){
+                        System.out.println(loginString);
+                    }
+                    if (parts.length != 2){
+                        System.out.println("Usage: observe <ID>");
+                        break;
+                    }
+                    try {
+                        gameId = Integer.parseInt(parts[1]);
+                    } catch (Exception ex){
+                        System.out.println("<ID> Must be a number");
+                        break;
+                    }
+                    try {
+                        var result = server.observeGame(gameId);
+                        System.out.println(result.message());
+                    } catch (Exception ex) {
+                        System.out.println("Failed to observe game");
+                    }
+                    break;
+                case "play":
+                    ChessGame.TeamColor teamColor = BLACK;
+                    if(!loggedIn){
+                        System.out.println(loginString);
+                    }
+                    if (parts.length != 3){
+                        System.out.println("Usage: play <ID> [WHITE|BLACK]");
+                        break;
+                    }
+                    try {
+                        gameId = Integer.parseInt(parts[1]);
+                    } catch (Exception ex){
+                        System.out.println("<ID> Must be a number");
+                    }
+                    try {
+                        teamColor = ChessGame.TeamColor.valueOf(parts[2].toUpperCase());
+                    } catch (Exception ex){
+                        System.out.println("Team Color must be WHITE or BLACK");
+                        break;
+                    }
+                    try {
+                        var result = server.playGame(new JoinGameRequest(teamColor, gameId, authToken));
+                        System.out.println(result.message());
+                    } catch (Exception ex) {
+                        System.out.println("Failed to create game");
+                    }
+                    break;
                 case "quit":
                     System.out.println("Exiting chess client...");
                     running = false;
