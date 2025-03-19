@@ -20,6 +20,7 @@ public class ChessClient {
         boolean isLoggedIn = false;
         String authToken = null;
         int gameId = 0;
+        //TODO: Local board variable?
 
         ServerFacade server = new ServerFacade();
 
