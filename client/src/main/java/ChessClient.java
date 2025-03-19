@@ -118,6 +118,16 @@ public class ChessClient {
                     if(!loggedIn){
                         System.out.println(loginString);
                     }
+                    if (parts.length != 1){
+                        System.out.println("Usage: list");
+                        break;
+                    }
+                    try {
+                        var result = server.listGames(authToken);
+                        System.out.println(result.message());
+                    } catch (Exception ex) {
+                        System.out.println("Failed to observe game");
+                    }
                     break;
                 case "observe":
                     if(!loggedIn){

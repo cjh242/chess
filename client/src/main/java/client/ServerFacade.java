@@ -111,7 +111,7 @@ public class ServerFacade {
         return new HttpResult(false, "");
     }
 
-    public HttpResult listGames(){
+    public HttpResult listGames(String authToken){
         return new HttpResult(false, "");
     }
     public HttpResult observeGame(int gameNumber){
