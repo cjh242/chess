@@ -18,7 +18,7 @@ public class ServerFacade {
 
     private final String baseUrl = "http://localhost:8080/";
 
-    public LoginResult login(LoginRequest login) throws Exception{
+    public String login(LoginRequest login) throws Exception{
         URI uri = new URI(baseUrl + "session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
@@ -36,16 +36,8 @@ public class ServerFacade {
 
         // Handle bad HTTP status
         var status = http.getResponseCode();
-        if ( status >= 200 && status < 300) {
-            try (InputStream in = http.getInputStream()) {
-                System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
-            }
-        } else {
-            try (InputStream in = http.getErrorStream()) {
-                System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
-            }
-        }
-        return new LoginResult(null, null, 0);
+        LoginResult result = (LoginResult)readResponseBody(http);
+        return getResultString(status, result);
     }
     public String register(RegisterRequest register) throws Exception{
         URI uri = new URI(baseUrl + "user");
@@ -67,18 +59,23 @@ public class ServerFacade {
 
         // Handle bad HTTP status
         var status = http.getResponseCode();
-        //var result = readResponseBody(http);
+        LoginResult result = (LoginResult)readResponseBody(http);
+        return getResultString(status, result);
+    }
+
+    private static String getResultString(int status, LoginResult result) {
         var resultString = "";
         if ( status >= 200 && status < 300) {
-            try (InputStream in = http.getInputStream()) {
-                resultString = "Success" + new Gson().fromJson(new InputStreamReader(in), Map.class);
-            }
+            resultString = "Logged in as" + result.username();
         } else {
             if(status == 500){
                 resultString = "An unknown error occurred with the server.";
             }
             else if(status == 400){
                 resultString = "There was an issue with your request. Please check usage constraints";
+            }
+            else if(status == 401){
+                resultString = "Wrong username or password";
             }
             else if(status == 403){
                 resultString = "Username already taken. Please choose a different username";
@@ -92,6 +89,7 @@ public class ServerFacade {
         }
         return resultString;
     }
+
     public CreateGameResult createGame(){
         return new CreateGameResult(0, 0);
     }

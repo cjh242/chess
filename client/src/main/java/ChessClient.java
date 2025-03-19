@@ -1,4 +1,5 @@
 import client.ServerFacade;
+import request.LoginRequest;
 import request.RegisterRequest;
 
 import java.util.Collection;
@@ -14,13 +15,14 @@ public class ChessClient {
     public void RunChessClient(){
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
+        boolean loggedIn = false;
 
         ServerFacade server = new ServerFacade();
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
         while (running) {
-            System.out.print("\n[LOGGED_OUT] >>> ");
+            System.out.print(loggedIn ? "\n[LOGGED_IN] >>> " : "\n[LOGGED_OUT] >>> ");
             String input = scanner.nextLine().trim();
 
             // Split input into command and arguments
@@ -55,9 +57,12 @@ public class ChessClient {
                         System.out.println("Usage: login <USERNAME> <PASSWORD>");
                         break;
                     }
-                    String loginUsername = parts[1];
-                    String loginPassword = parts[2];
-                    System.out.println("Logging in user: " + loginUsername);
+                    try {
+                        var result = server.login(new LoginRequest(parts[1], parts[2]));
+                        System.out.println(result);
+                    } catch (Exception ex) {
+                        System.out.println("Failed to login user");
+                    }
 
                     break;
 
