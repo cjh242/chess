@@ -1,5 +1,6 @@
 import chess.ChessGame;
 import client.ServerFacade;
+import dataobjects.GameData;
 import request.*;
 
 import java.util.Collection;
@@ -20,6 +21,7 @@ public class ChessClient {
         boolean isLoggedIn = false;
         String authToken = null;
         int gameId = 0;
+        Collection<GameData> games;
         //TODO: Local board variable?
 
         ServerFacade server = new ServerFacade();
@@ -40,20 +42,23 @@ public class ChessClient {
             switch (command) {
                 case "help":
                     if (isLoggedIn) {
-                        System.out.println("  create <NAME>  - a game");
-                        System.out.println("  list           - games");
-                        System.out.println("  join <ID> [WHITE|BLACK]  - a game");
-                        System.out.println("  observe <ID>   - a game");
-                        System.out.println("  logout         - when you are done");
+                        System.out.println("  create <NAME> - a game");
+                        System.out.println("  list - games");
+                        System.out.println("  join <ID> [WHITE|BLACK] - a game");
+                        System.out.println("  observe <ID> - a game");
+                        System.out.println("  logout - when you are done");
                     } else {
                         System.out.println("  register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
-                        System.out.println("  login <USERNAME> <PASSWORD>  - to play chess");
+                        System.out.println("  login <USERNAME> <PASSWORD> - to play chess");
                     }
-                    System.out.println("  quit           - playing chess");
-                    System.out.println("  help           - with possible commands");
+                    System.out.println("  quit - playing chess");
+                    System.out.println("  help - with possible commands");
                     break;
 
                 case "register":
+                    if(isLoggedIn){
+                        System.out.println("Cannot register while logged in. Please first logout.");
+                    }
                     if (parts.length < 4) {
                         System.out.println("Usage: register <USERNAME> <PASSWORD> <EMAIL>");
                         break;
@@ -71,6 +76,9 @@ public class ChessClient {
                     break;
 
                 case "login":
+                    if(isLoggedIn){
+                        System.out.println("Already logged in. Please first logout.");
+                    }
                     if (parts.length < 3) {
                         System.out.println("Usage: login <USERNAME> <PASSWORD>");
                         break;
