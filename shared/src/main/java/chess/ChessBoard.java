@@ -328,7 +328,7 @@ public class ChessBoard {
 
         return sb.toString();
     }
-
+    
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

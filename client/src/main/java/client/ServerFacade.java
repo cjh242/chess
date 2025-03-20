@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import dataobjects.GameData;
 import request.*;
 import result.*;
 
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 public class ServerFacade {
@@ -176,7 +178,7 @@ public class ServerFacade {
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
                 var successResult = new Gson().fromJson(new InputStreamReader(in), ListGamesResult.class);
-                return new HttpResult(true, "Games: ");
+                return new HttpResult(true, "Games: ", (List<GameData>)successResult.games());
             }
         } else {
             try (InputStream in = http.getErrorStream()) {

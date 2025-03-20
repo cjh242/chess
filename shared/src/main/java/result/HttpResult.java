@@ -1,14 +1,13 @@
 package result;
 
 import dataobjects.GameData;
+import java.util.List;
 
-import java.util.Collection;
-
-public record HttpResult(boolean isOk, String message, String authToken, Collection<GameData> games) {
+public record HttpResult(boolean isOk, String message, String authToken, List<GameData> games) {
     public HttpResult(boolean isOk, String message) {
         this(isOk, message, null, null);
     }
-    public HttpResult(boolean isOk, String message, Collection<GameData> games) {
+    public HttpResult(boolean isOk, String message, List<GameData> games) {
         this(isOk, message, null, games);
     }
     public HttpResult(boolean isOk, String message, String authToken) {

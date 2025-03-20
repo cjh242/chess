@@ -2,27 +2,23 @@ import chess.ChessGame;
 import client.ServerFacade;
 import dataobjects.GameData;
 import request.*;
+import service.PrintingHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
-import static chess.ChessGame.TeamColor.BLACK;
-
 public class ChessClient {
-
-    private final static Collection<String> preLoginCommands = List.of("help", "quit", "login", "register");
-    private final static Collection<String> postLoginCommands =
-            List.of("help", "logout", "create", "list", "play", "observe");
 
     public void RunChessClient(){
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         boolean isLoggedIn = false;
+        boolean hasListedGames = false;
         String authToken = null;
-        int gameId = 0;
-        Collection<GameData> games;
-        //TODO: Local board variable?
+        int gameNumber = 0;
+        List<GameData> games = new ArrayList<>();
 
         ServerFacade server = new ServerFacade();
 
@@ -142,6 +138,13 @@ public class ChessClient {
                     try {
                         var result = server.listGames(authToken);
                         System.out.println(result.message());
+                        games = result.games();
+                        for (var game : games){
+                            PrintingHelper.printBoard(game.game().getBoard(), games.indexOf(game), game.gameName());
+                        }
+                        if(!result.games().isEmpty()){
+                            hasListedGames = true;
+                        }
                     } catch (Exception ex) {
                         System.out.println("Failed to observe game");
                     }
@@ -150,19 +153,22 @@ public class ChessClient {
                     if(!isLoggedIn){
                         System.out.println(loginString);
                     }
+                    if(!hasListedGames){
+                        System.out.println("Please list games before observing");
+                    }
                     if (parts.length != 2){
                         System.out.println("Usage: observe <ID>");
                         break;
                     }
                     try {
-                        gameId = Integer.parseInt(parts[1]);
+                        gameNumber = Integer.parseInt(parts[1]);
                     } catch (Exception ex){
                         System.out.println("<ID> Must be a number");
                         break;
                     }
                     try {
-                        var result = server.observeGame(gameId);
-                        System.out.println(result.message());
+                        var game = games.get(gameNumber);
+                        PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName());
                     } catch (Exception ex) {
                         System.out.println("Failed to observe game");
                     }
@@ -176,8 +182,11 @@ public class ChessClient {
                         System.out.println("Usage: play <ID> [WHITE|BLACK]");
                         break;
                     }
+                    if(!hasListedGames){
+                        System.out.println("Please list games before attempting to join");
+                    }
                     try {
-                        gameId = Integer.parseInt(parts[1]);
+                        gameNumber = Integer.parseInt(parts[1]);
                     } catch (Exception ex){
                         System.out.println("<ID> Must be a number");
                     }
@@ -188,8 +197,14 @@ public class ChessClient {
                         break;
                     }
                     try {
-                        var result = server.playGame(new JoinGameRequest(teamColor, gameId, authToken));
+                        if(games.isEmpty()){
+                            System.out.println("There are no games to join.");
+                            break;
+                        }
+                        var game = games.get(gameNumber);
+                        var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
                         System.out.println(result.message());
+                        PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName());
                     } catch (Exception ex) {
                         System.out.println("Failed to create game");
                     }
