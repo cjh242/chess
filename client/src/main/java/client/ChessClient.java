@@ -140,7 +140,7 @@ public class ChessClient {
                         System.out.println(result.message());
                         games = result.games();
                         for (var game : games){
-                            PrintingHelper.printBoard(game.game().getBoard(), games.indexOf(game), game.gameName());
+                            PrintingHelper.printBoard(game.game().getBoard(), games.indexOf(game), game.gameName(), ChessGame.TeamColor.WHITE);
                         }
                         if(!result.games().isEmpty()){
                             hasListedGames = true;
@@ -168,7 +168,7 @@ public class ChessClient {
                     }
                     try {
                         var game = games.get(gameNumber);
-                        PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName());
+                        PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName(), ChessGame.TeamColor.WHITE);
                     } catch (Exception ex) {
                         System.out.println("Failed to observe game");
                     }
@@ -204,7 +204,7 @@ public class ChessClient {
                         var game = games.get(gameNumber);
                         var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
                         System.out.println(result.message());
-                        PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName());
+                        PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName(), teamColor);
                     } catch (Exception ex) {
                         System.out.println("Failed to create game");
                     }
