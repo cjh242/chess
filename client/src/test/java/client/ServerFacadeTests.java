@@ -81,13 +81,20 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void logoutValid(){
+    public void logoutValid() throws Exception {
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
 
+        var result = facade.logout(new LogoutRequest(registerResult.authToken()));
+
+        Assertions.assertTrue(result.isOk());
     }
 
     @Test
-    public void logoutNotLoggedIn(){
+    public void logoutNotLoggedIn() throws Exception {
 
+        var result = facade.logout(new LogoutRequest("AUTH_TOKEN"));
+
+        Assertions.assertFalse(result.isOk());
     }
 
     @Test
