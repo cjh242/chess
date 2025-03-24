@@ -1,10 +1,8 @@
 package client;
 
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import server.Server;
 
 
@@ -115,13 +113,22 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void playGameValid(){
+    public void playGameValid() throws Exception {
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
+        var createResult = facade.createGame(new CreateGameRequest(registerResult.authToken(), "NEW_GAME"));
+        var listResult = facade.listGames(registerResult.authToken());
+        var game = listResult.games().getFirst();
 
+        var result = facade.playGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, game.gameID(), registerResult.authToken()));
+
+        Assertions.assertTrue(result.isOk());
     }
 
     @Test
-    public void playGameBadRequest(){
+    public void playGameBadAuthNoGame() throws Exception {
+        var result = facade.playGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, 0, "AUTH"));
 
+        Assertions.assertFalse(result.isOk());
     }
 
     @Test
