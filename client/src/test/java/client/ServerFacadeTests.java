@@ -1,14 +1,20 @@
 package client;
 
 import org.junit.jupiter.api.*;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
 import server.Server;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
-    private static ChessClient client;
     private static ServerFacade facade;
+
+    private final String username = "TEST_USER";
+    private final String password = "PASSWORD";
+    private final String email = "EMAIL@MAIL.COM";
 
     @BeforeAll
     public static void init() {
@@ -30,9 +36,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void loginValid() {
+    public void loginValid() throws Exception {
 
-        Assertions.assertTrue(true);
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
+        facade.logout(new LogoutRequest(registerResult.authToken()));
+
+        var result = facade.login(new LoginRequest(username, password));
+
+        Assertions.assertTrue(result.isOk());
     }
 
     @Test

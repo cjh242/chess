@@ -17,14 +17,16 @@ public class ServerFacade {
 
     public ServerFacade(){
         this.port = "8080";
+        this.baseUrl = local + this.port;
     }
     public ServerFacade(int port){
         this.port = String.valueOf(port);
+        this.baseUrl = local + this.port;
     }
 
     private String port;
     private final String local = "http://localhost:";
-    private final String baseUrl = local + port;
+    private final String baseUrl;
 
     public String setPort(int port) {
         this.port = String.valueOf(port);
