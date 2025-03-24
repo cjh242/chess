@@ -51,10 +51,7 @@ public class ServerFacade {
                 return new HttpResult(true, "Logged in as " + successResult.username(), successResult.authToken());
             }
         } else {
-            try (InputStream in = http.getErrorStream()) {
-                var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
-                return new HttpResult(false, failResult.message());
-            }
+            return parseErrorResponse(http);
         }
     }
 
@@ -85,10 +82,7 @@ public class ServerFacade {
         if ( status >= 200 && status < 300) {
             return new HttpResult(true, "Logged Out");
         } else {
-            try (InputStream in = http.getErrorStream()) {
-                var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
-                return new HttpResult(false, failResult.message());
-            }
+            return parseErrorResponse(http);
         }
     }
 
@@ -116,10 +110,7 @@ public class ServerFacade {
                 return new HttpResult(true, "Game Created " + request.gameName());
             }
         } else {
-            try (InputStream in = http.getErrorStream()) {
-                var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
-                return new HttpResult(false, failResult.message());
-            }
+            return parseErrorResponse(http);
         }
     }
 
@@ -144,10 +135,7 @@ public class ServerFacade {
         if ( status >= 200 && status < 300) {
             return new HttpResult(true, "Game Joined");
         } else {
-            try (InputStream in = http.getErrorStream()) {
-                var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
-                return new HttpResult(false, failResult.message());
-            }
+            return parseErrorResponse(http);
         }
     }
 
@@ -167,15 +155,8 @@ public class ServerFacade {
                 return new HttpResult(true, "Games: ", (List<GameData>)successResult.games());
             }
         } else {
-            try (InputStream in = http.getErrorStream()) {
-                var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
-                return new HttpResult(false, failResult.message());
-            }
+            return parseErrorResponse(http);
         }
-    }
-    public HttpResult observeGame(int gameNumber){
-        //TODO: finish this method in phase 6
-        return new HttpResult(true, "");
     }
 
     public void deleteAll() throws Exception{
@@ -187,6 +168,13 @@ public class ServerFacade {
         int responseCode = http.getResponseCode();
         if (responseCode != 200) {
             throw new RuntimeException("Failed to delete all: HTTP " + responseCode);
+        }
+    }
+
+    private static HttpResult parseErrorResponse(HttpURLConnection http) throws IOException {
+        try (InputStream in = http.getErrorStream()) {
+            var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
+            return new HttpResult(false, failResult.message());
         }
     }
 }

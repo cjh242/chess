@@ -58,7 +58,9 @@ public class PrintingHelper {
 
 
     private static String getPieceSymbol(ChessPiece piece) {
-        if (piece == null) return EMPTY;
+        if (piece == null) {
+            return EMPTY;
+        }
 
         return switch (piece.getPieceType()) {
             case KING -> piece.getTeamColor() == WHITE ? WHITE_KING : BLACK_KING;
