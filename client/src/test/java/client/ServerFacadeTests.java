@@ -31,19 +31,14 @@ public class ServerFacadeTests {
 
     @BeforeEach
     public void clearData() throws Exception {
-        try{
-            facade.deleteAll();
-        } catch (Exception ex){
-            System.out.println("FAILED TO DELETE ALL");
-        }
-
+        facade.deleteAll();
     }
 
     @Test
     public void loginValid() throws Exception {
 
         var registerResult = facade.register(new RegisterRequest(username, password, email));
-        var logoutResult = facade.logout(new LogoutRequest(registerResult.authToken()));
+        facade.logout(new LogoutRequest(registerResult.authToken()));
 
         var result = facade.login(new LoginRequest(username, password));
 
@@ -115,7 +110,7 @@ public class ServerFacadeTests {
     @Test
     public void playGameValid() throws Exception {
         var registerResult = facade.register(new RegisterRequest(username, password, email));
-        var createResult = facade.createGame(new CreateGameRequest(registerResult.authToken(), "NEW_GAME"));
+        facade.createGame(new CreateGameRequest(registerResult.authToken(), "NEW_GAME"));
         var listResult = facade.listGames(registerResult.authToken());
         var game = listResult.games().getFirst();
 

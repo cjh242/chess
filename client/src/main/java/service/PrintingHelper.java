@@ -37,21 +37,14 @@ public class PrintingHelper {
     private static String getPieceSymbol(ChessPiece piece) {
         if (piece == null) return EMPTY;
 
-        switch (piece.getPieceType()) {
-            case KING:
-                return piece.getTeamColor() == WHITE ? WHITE_KING : BLACK_KING;
-            case QUEEN:
-                return piece.getTeamColor() == WHITE ? WHITE_QUEEN : BLACK_QUEEN;
-            case BISHOP:
-                return piece.getTeamColor() == WHITE ? WHITE_BISHOP : BLACK_BISHOP;
-            case KNIGHT:
-                return piece.getTeamColor() == WHITE ? WHITE_KNIGHT : BLACK_KNIGHT;
-            case ROOK:
-                return piece.getTeamColor() == WHITE ? WHITE_ROOK : BLACK_ROOK;
-            case PAWN:
-                return piece.getTeamColor() == WHITE ? WHITE_PAWN : BLACK_PAWN;
-            default:
-                return EMPTY;
-        }
+        return switch (piece.getPieceType()) {
+            case KING -> piece.getTeamColor() == WHITE ? WHITE_KING : BLACK_KING;
+            case QUEEN -> piece.getTeamColor() == WHITE ? WHITE_QUEEN : BLACK_QUEEN;
+            case BISHOP -> piece.getTeamColor() == WHITE ? WHITE_BISHOP : BLACK_BISHOP;
+            case KNIGHT -> piece.getTeamColor() == WHITE ? WHITE_KNIGHT : BLACK_KNIGHT;
+            case ROOK -> piece.getTeamColor() == WHITE ? WHITE_ROOK : BLACK_ROOK;
+            case PAWN -> piece.getTeamColor() == WHITE ? WHITE_PAWN : BLACK_PAWN;
+            default -> EMPTY;
+        };
     }
 }

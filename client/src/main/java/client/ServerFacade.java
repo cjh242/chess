@@ -15,10 +15,6 @@ import java.util.Map;
 
 public class ServerFacade {
 
-    public ServerFacade(){
-        this.port = "8080";
-        this.baseUrl = local + this.port;
-    }
     public ServerFacade(int port){
         this.port = String.valueOf(port);
         this.baseUrl = local + this.port;
@@ -27,15 +23,6 @@ public class ServerFacade {
     private String port;
     private final String local = "http://localhost:";
     private final String baseUrl;
-
-    public String setPort(int port) {
-        this.port = String.valueOf(port);
-        return this.port;
-    }
-
-    private String getPort(){
-        return this.port;
-    }
 
     public HttpResult login(LoginRequest login) throws Exception{
         URI uri = new URI(baseUrl + "/session");
@@ -125,7 +112,7 @@ public class ServerFacade {
         var status = http.getResponseCode();
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
-                var successResult = new Gson().fromJson(new InputStreamReader(in), CreateGameResult.class);
+                new Gson().fromJson(new InputStreamReader(in), CreateGameResult.class);
                 return new HttpResult(true, "Game Created " + request.gameName());
             }
         } else {
