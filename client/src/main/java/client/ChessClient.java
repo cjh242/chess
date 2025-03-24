@@ -29,7 +29,9 @@ public class ChessClient {
             System.out.print(isLoggedIn ? "\n[LOGGED_IN] >>> " : "\n[LOGGED_OUT] >>> ");
             String input = scanner.nextLine().trim();
             String[] parts = input.split("\\s+");
-            if (parts.length == 0) continue;
+            if (parts.length == 0) {
+                continue;
+            }
 
             String command = parts[0].toLowerCase();
 
