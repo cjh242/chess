@@ -15,10 +15,28 @@ import java.util.Map;
 
 public class ServerFacade {
 
-    private final String baseUrl = "http://localhost:8080/";
+    public ServerFacade(){
+        this.port = "8080";
+    }
+    public ServerFacade(int port){
+        this.port = String.valueOf(port);
+    }
+
+    private String port;
+    private final String local = "http://localhost:";
+    private final String baseUrl = local + port;
+
+    public String setPort(int port) {
+        this.port = String.valueOf(port);
+        return this.port;
+    }
+
+    private String getPort(){
+        return this.port;
+    }
 
     public HttpResult login(LoginRequest login) throws Exception{
-        URI uri = new URI(baseUrl + "session");
+        URI uri = new URI(baseUrl + "/session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
         http.setDoOutput(true);
@@ -48,7 +66,7 @@ public class ServerFacade {
         }
     }
     public HttpResult register(RegisterRequest register) throws Exception{
-        URI uri = new URI(baseUrl + "user");
+        URI uri = new URI(baseUrl + "/user");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
         http.setDoOutput(true);
@@ -81,7 +99,7 @@ public class ServerFacade {
     }
 
     public HttpResult logout(LogoutRequest logout) throws Exception{
-        URI uri = new URI(baseUrl + "session");
+        URI uri = new URI(baseUrl + "/session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("DELETE");
         http.setDoOutput(true);
@@ -101,7 +119,7 @@ public class ServerFacade {
     }
 
     public HttpResult createGame(CreateGameRequest request) throws Exception{
-        URI uri = new URI(baseUrl + "game");
+        URI uri = new URI(baseUrl + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
         http.setDoOutput(true);
@@ -134,7 +152,7 @@ public class ServerFacade {
     }
 
     public HttpResult playGame(JoinGameRequest request) throws Exception{
-        URI uri = new URI(baseUrl + "game");
+        URI uri = new URI(baseUrl + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("PUT");
         http.setDoOutput(true);
@@ -164,7 +182,7 @@ public class ServerFacade {
     }
 
     public HttpResult listGames(String authToken) throws Exception{
-        URI uri = new URI(baseUrl + "game");
+        URI uri = new URI(baseUrl + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("GET");
         http.setDoOutput(true);
@@ -190,5 +208,12 @@ public class ServerFacade {
     public HttpResult observeGame(int gameNumber){
         //TODO: finish this method in phase 6
         return new HttpResult(true, "");
+    }
+
+    public void deleteAll() throws Exception{
+        URI uri = new URI(baseUrl + "/db");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("DELETE");
+        http.connect();
     }
 }

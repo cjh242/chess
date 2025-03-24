@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <build>
-        <finalName>ChessClient</finalName>
+        <finalName>client.ChessClient</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

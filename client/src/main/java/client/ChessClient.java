@@ -1,17 +1,17 @@
+package client;
+
 import chess.ChessGame;
-import client.ServerFacade;
 import dataobjects.GameData;
 import request.*;
 import service.PrintingHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
 public class ChessClient {
 
-    public void RunChessClient(){
+    public void RunChessClient(int port){
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         boolean isLoggedIn = false;
@@ -20,7 +20,7 @@ public class ChessClient {
         int gameNumber = 0;
         List<GameData> games = new ArrayList<>();
 
-        ServerFacade server = new ServerFacade();
+        ServerFacade server = new ServerFacade(port);
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
