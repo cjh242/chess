@@ -32,23 +32,34 @@ public class ServerFacadeTests {
 
     @BeforeEach
     public void clearData() throws Exception {
-        facade.deleteAll();
+        try{
+            facade.deleteAll();
+        } catch (Exception ex){
+            System.out.println("FAILED TO DELETE ALL");
+        }
+
     }
 
     @Test
     public void loginValid() throws Exception {
 
         var registerResult = facade.register(new RegisterRequest(username, password, email));
-        facade.logout(new LogoutRequest(registerResult.authToken()));
+        var logoutResult = facade.logout(new LogoutRequest(registerResult.authToken()));
 
         var result = facade.login(new LoginRequest(username, password));
 
         Assertions.assertTrue(result.isOk());
+        Assertions.assertEquals("Logged in as " + username, result.message());
     }
 
     @Test
-    public void loginWrongPassword() {
+    public void loginWrongPassword() throws Exception {
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
+        facade.logout(new LogoutRequest(registerResult.authToken()));
 
+        var result = facade.login(new LoginRequest(username, "WRONG_PASSWORD"));
+
+        Assertions.assertFalse(result.isOk());
     }
 
     @Test

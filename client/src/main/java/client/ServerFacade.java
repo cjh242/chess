@@ -46,6 +46,10 @@ public class ServerFacade {
 
         var body = Map.of("username", login.username(), "password", login.password());
 
+        return getLoginResult(http, body);
+    }
+
+    private HttpResult getLoginResult(HttpURLConnection http, Map<String, String> body) throws IOException {
         try (var outputStream = http.getOutputStream()) {
             var jsonBody = new Gson().toJson(body);
             outputStream.write(jsonBody.getBytes());
@@ -53,7 +57,6 @@ public class ServerFacade {
 
         http.connect();
 
-        // Handle bad HTTP status
         var status = http.getResponseCode();
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
@@ -67,6 +70,7 @@ public class ServerFacade {
             }
         }
     }
+
     public HttpResult register(RegisterRequest register) throws Exception{
         URI uri = new URI(baseUrl + "/user");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -78,26 +82,7 @@ public class ServerFacade {
                 "password", register.password(),
                 "email", register.email());
 
-        try (var outputStream = http.getOutputStream()) {
-            var jsonBody = new Gson().toJson(body);
-            outputStream.write(jsonBody.getBytes());
-        }
-
-        http.connect();
-
-        // Handle bad HTTP status
-        var status = http.getResponseCode();
-        if ( status >= 200 && status < 300) {
-            try (InputStream in = http.getInputStream()) {
-                var successResult = new Gson().fromJson(new InputStreamReader(in), LoginResult.class);
-                return new HttpResult(true, "Logged in as " + successResult.username(), successResult.authToken());
-            }
-        } else {
-            try (InputStream in = http.getErrorStream()) {
-                var failResult = new Gson().fromJson(new InputStreamReader(in), ErrorResult.class);
-                return new HttpResult(false, failResult.message());
-            }
-        }
+        return getLoginResult(http, body);
     }
 
     public HttpResult logout(LogoutRequest logout) throws Exception{
@@ -137,9 +122,7 @@ public class ServerFacade {
 
         http.connect();
 
-        // Handle bad HTTP status
         var status = http.getResponseCode();
-        // TODO: Need to print the created game
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
                 var successResult = new Gson().fromJson(new InputStreamReader(in), CreateGameResult.class);
@@ -170,9 +153,7 @@ public class ServerFacade {
 
         http.connect();
 
-        // Handle bad HTTP status
         var status = http.getResponseCode();
-        // TODO: return a different result here, and prep to print the game
         if ( status >= 200 && status < 300) {
             return new HttpResult(true, "Game Joined");
         } else {
@@ -192,9 +173,7 @@ public class ServerFacade {
 
         http.connect();
 
-        // Handle bad HTTP status
         var status = http.getResponseCode();
-        // TODO: return a different result here, and prep to print the game
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
                 var successResult = new Gson().fromJson(new InputStreamReader(in), ListGamesResult.class);
@@ -217,5 +196,10 @@ public class ServerFacade {
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("DELETE");
         http.connect();
+
+        int responseCode = http.getResponseCode();
+        if (responseCode != 200) {
+            throw new RuntimeException("Failed to delete all: HTTP " + responseCode);
+        }
     }
 }
