@@ -188,7 +188,7 @@ public class ServerFacade {
         }
     }
     public HttpResult observeGame(int gameNumber){
-        //TODO: finish this method
-        return new HttpResult(false, "");
+        //TODO: finish this method in phase 6
+        return new HttpResult(true, "");
     }
 }
