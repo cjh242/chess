@@ -63,13 +63,21 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void registerValid(){
+    public void registerValid() throws Exception {
+        var result = facade.register(new RegisterRequest(username, password, email));
 
+        Assertions.assertTrue(result.isOk());
+        Assertions.assertEquals("Logged in as " + username, result.message());
     }
 
     @Test
-    public void registerUsernameTaken(){
+    public void registerUsernameTaken() throws Exception {
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
+        facade.logout(new LogoutRequest(registerResult.authToken()));
 
+        var result = facade.register(new RegisterRequest(username, password, email));
+
+        Assertions.assertFalse(result.isOk());
     }
 
     @Test
