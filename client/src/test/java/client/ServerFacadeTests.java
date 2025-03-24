@@ -132,13 +132,24 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void listGamesValid(){
+    public void listGamesValid() throws Exception {
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
+        facade.createGame(new CreateGameRequest(registerResult.authToken(), "NEW_GAME1"));
+        facade.createGame(new CreateGameRequest(registerResult.authToken(), "NEW_GAME2"));
+        facade.createGame(new CreateGameRequest(registerResult.authToken(), "NEW_GAME3"));
+        var result = facade.listGames(registerResult.authToken());
 
+        Assertions.assertTrue(result.isOk());
+        Assertions.assertEquals(3, result.games().size());
     }
 
     @Test
-    public void listGamesNoGames(){
+    public void listGamesNoGames() throws Exception {
+        var registerResult = facade.register(new RegisterRequest(username, password, email));
+        var result = facade.listGames(registerResult.authToken());
 
+        Assertions.assertTrue(result.isOk());
+        Assertions.assertTrue(result.games().isEmpty());
     }
 
 }
