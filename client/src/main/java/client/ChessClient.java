@@ -216,7 +216,9 @@ public class ChessClient {
             var game = games.get(gameNumber);
             var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
             System.out.println(result.message());
-            PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName(), teamColor);
+            if(result.isOk()) {
+                PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName(), teamColor);
+            }
         } catch (NumberFormatException ex) {
             System.out.println("<ID> Must be a number");
         } catch (IllegalArgumentException ex) {
