@@ -83,7 +83,7 @@ public class ChessClient {
         if (isLoggedIn) {
             System.out.println("  create <NAME> - a game");
             System.out.println("  list - games");
-            System.out.println("  join <ID> [WHITE|BLACK] - a game");
+            System.out.println("  play <ID> [WHITE|BLACK] - a game");
             System.out.println("  observe <ID> - a game");
             System.out.println("  logout - when you are done");
         } else {
@@ -161,6 +161,10 @@ public class ChessClient {
             var result = server.listGames(authToken);
             System.out.println(result.message());
             int i = 0;
+            if(result.games().isEmpty()){
+                System.out.println("No games to list");
+                return null;
+            }
             for (var game : result.games()) {
                 PrintingHelper.printBoard(game.game().getBoard(), i++, game.gameName(), ChessGame.TeamColor.WHITE);
             }

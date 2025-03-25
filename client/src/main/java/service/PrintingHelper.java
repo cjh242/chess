@@ -37,6 +37,9 @@ public class PrintingHelper {
 
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 boolean isDarkSquare = (row + col) % 2 != 0;
+                if(isWhitePerspective){
+                    isDarkSquare = (row + col) % 2 == 0;
+                }
 
                 String bgColor = isDarkSquare ? SET_BG_COLOR_DARK_GREY : SET_BG_COLOR_LIGHT_GREY;
                 String pieceSymbol = getPieceSymbol(piece);
