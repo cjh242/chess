@@ -6,6 +6,7 @@ import client.websocket.WebSocketFacade;
 import dataobjects.GameData;
 import request.*;
 import result.HttpResult;
+import service.NotificationCentral;
 import service.PrintingHelper;
 import websocket.messages.ServerMessage;
 
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ChessClient implements NotificationHandler{
+public class ChessClient {
 
     public void runChessClient(int port) {
         Scanner scanner = new Scanner(System.in);
@@ -25,7 +26,7 @@ public class ChessClient implements NotificationHandler{
         List<GameData> games = new ArrayList<>();
 
         ServerFacade server = new ServerFacade(port);
-        WebSocketFacade ws = new WebSocketFacade(port, new ChessClient());
+        WebSocketFacade ws = new WebSocketFacade(port, new NotificationCentral());
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
@@ -229,16 +230,6 @@ public class ChessClient implements NotificationHandler{
             System.out.println("Team Color must be WHITE or BLACK");
         } catch (Exception ex) {
             System.out.println("Failed to join game");
-        }
-    }
-
-
-    @Override
-    public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case NOTIFICATION -> doSomthing();
-            case ERROR -> doSomthing();
-            case LOAD_GAME -> doSomething();
         }
     }
 }
