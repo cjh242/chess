@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataobjects.GameData;
 import request.*;
 import result.*;
+import service.URLBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +17,9 @@ import java.util.Map;
 public class ServerFacade {
 
     public ServerFacade(int port){
-        this.port = String.valueOf(port);
-        this.baseUrl = local + this.port;
+        this.baseUrl = URLBuilder.getHTTPURLFromPort(port);
     }
 
-    private String port;
-    private final String local = "http://localhost:";
     private final String baseUrl;
 
     public HttpResult login(LoginRequest login) throws Exception{

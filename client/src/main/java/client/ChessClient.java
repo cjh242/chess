@@ -1,16 +1,19 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import dataobjects.GameData;
 import request.*;
 import result.HttpResult;
 import service.PrintingHelper;
+import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler{
 
     public void runChessClient(int port) {
         Scanner scanner = new Scanner(System.in);
@@ -22,6 +25,7 @@ public class ChessClient {
         List<GameData> games = new ArrayList<>();
 
         ServerFacade server = new ServerFacade(port);
+        WebSocketFacade ws = new WebSocketFacade(port, new ChessClient());
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
@@ -229,4 +233,12 @@ public class ChessClient {
     }
 
 
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> doSomthing();
+            case ERROR -> doSomthing();
+            case LOAD_GAME -> doSomething();
+        }
+    }
 }
