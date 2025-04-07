@@ -41,6 +41,17 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
+    public void makeMove(){
+
+    }
+
+    public void leave(){
+
+    }
+
+    public void resign(){
+
+    }
 //    public void enterPetShop(String visitorName) throws ResponseException {
 //        try {
 //            var action = new Action(Action.Type.ENTER, visitorName);
