@@ -12,8 +12,14 @@ public class PrintingHelper {
 
     public static void printBoard(ChessBoard board, int number, String name, ChessGame.TeamColor perspective) {
         System.out.print(ERASE_SCREEN); // Clear screen
-        System.out.println("Game Name: " + name);
-        System.out.println("Game Number: " + number);
+
+        if (name != null) {
+            System.out.println("Game Name: " + name);
+        }
+
+        if (number != -1){
+            System.out.println("Game Number: " + number);
+        }
 
         boolean isWhitePerspective = (perspective == ChessGame.TeamColor.WHITE);
 

@@ -1,7 +1,9 @@
 package client.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import service.URLBuilder;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -9,12 +11,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static websocket.commands.UserGameCommand.CommandType.CONNECT;
+
 public class WebSocketFacade extends Endpoint {
 
     NotificationHandler notificationHandler;
     Session session;
 
-    public WebSocketFacade(int port, NotificationHandler notificationHandler) {
+    public WebSocketFacade(int port, NotificationHandler notificationHandler, ChessGame.TeamColor perspective) {
         try {
             String url = URLBuilder.getWSURLFromPort(port);
             URI socketURI = new URI(url + "/ws");
@@ -28,7 +32,7 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(serverMessage);
+                    notificationHandler.notify(serverMessage, perspective);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -39,6 +43,15 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void connect(String authToken, int gameID){
+        try{
+            var command = new UserGameCommand(CONNECT, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            System.out.println("Error connecting to server");
+        }
     }
 
     public void makeMove(){
@@ -52,22 +65,4 @@ public class WebSocketFacade extends Endpoint {
     public void resign(){
 
     }
-//    public void enterPetShop(String visitorName) throws ResponseException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
-//
-//    public void leavePetShop(String visitorName) throws ResponseException {
-//        try {
-//            var action = new Action(Action.Type.EXIT, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//            this.session.close();
-//        } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
 }

@@ -16,7 +16,14 @@ import java.util.Scanner;
 
 public class ChessClient {
 
+    private int port;
+
+    public ChessClient(){
+        this.port = -1;
+    }
+
     public void runChessClient(int port) {
+        this.port = port;
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         boolean isLoggedIn = false;
@@ -26,7 +33,6 @@ public class ChessClient {
         List<GameData> games = new ArrayList<>();
 
         ServerFacade server = new ServerFacade(port);
-        WebSocketFacade ws = new WebSocketFacade(port, new NotificationCentral());
 
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
@@ -221,9 +227,8 @@ public class ChessClient {
             var game = games.get(gameNumber);
             var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
             System.out.println(result.message());
-            if(result.isOk()) {
-                PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName(), teamColor);
-            }
+            WebSocketFacade ws = new WebSocketFacade(port, new NotificationCentral(), teamColor);
+            ws.connect(authToken, game.gameID());
         } catch (NumberFormatException ex) {
             System.out.println("<ID> Must be a number");
         } catch (IllegalArgumentException ex) {
