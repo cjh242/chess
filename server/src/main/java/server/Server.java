@@ -30,7 +30,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        Spark.webSocket("ws", webSocketHandler);
+        Spark.webSocket("/ws", webSocketHandler);
 
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);

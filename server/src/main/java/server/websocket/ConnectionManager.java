@@ -1,5 +1,6 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import websocket.messages.ServerMessage;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -25,9 +26,10 @@ public class ConnectionManager {
             if (c.session.isOpen()) {
                 if (!c.username.equals(excludeUserName) && c.gameID == gameID) {
                     try{
-                        c.send(message.toString());
+                        String jsonMessage = new Gson().toJson(message);
+                        c.send(jsonMessage);
                     } catch (Exception ex){
-
+                        System.out.println("Error sending message in broadcast");
                     }
                 }
             } else {
@@ -45,9 +47,10 @@ public class ConnectionManager {
         var connection = connections.get(username);
         if(connection != null){
             try {
-                connection.send(message.toString());
+                String jsonMessage = new Gson().toJson(message);
+                connection.send(jsonMessage);
             } catch (Exception ex){
-
+                System.out.println(ex + "failed to send");
             }
         }
     }
