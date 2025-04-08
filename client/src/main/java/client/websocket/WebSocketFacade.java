@@ -1,8 +1,10 @@
 package client.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import service.URLBuilder;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -11,7 +13,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static websocket.commands.UserGameCommand.CommandType.CONNECT;
+import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketFacade extends Endpoint {
 
@@ -54,15 +56,30 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove(){
-
+    public void makeMove(String authToken, int gameID, ChessMove move){
+        try{
+            var command = new MakeMoveCommand(authToken, gameID, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            System.out.println("Error connecting to server");
+        }
     }
 
-    public void leave(){
-
+    public void leave(String authToken, int gameID){
+        try{
+            var command = new UserGameCommand(LEAVE, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            System.out.println("Error connecting to server");
+        }
     }
 
-    public void resign(){
-
+    public void resign(String authToken, int gameID){
+        try{
+            var command = new UserGameCommand(RESIGN, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            System.out.println("Error connecting to server");
+        }
     }
 }
