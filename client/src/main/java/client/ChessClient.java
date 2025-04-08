@@ -19,6 +19,7 @@ import static chess.ChessGame.TeamColor.WHITE;
 public class ChessClient {
 
     private int port;
+    private WebSocketFacade ws = null;
 
     public ChessClient(){
         this.port = -1;
@@ -30,7 +31,10 @@ public class ChessClient {
         boolean isRunning = true;
         boolean isLoggedIn = false;
         boolean hasListedGames = false;
+        boolean isInGameplay = false;
+        boolean isObserving = false;
         String authToken = null;
+        WebSocketFacade ws = null;
         int gameNumber = 0;
         List<GameData> games = new ArrayList<>();
 
@@ -50,7 +54,7 @@ public class ChessClient {
 
             switch (command) {
                 case "help":
-                    printHelp(isLoggedIn);
+                    printHelp(isLoggedIn, isInGameplay);
                     break;
                 case "register":
                     authToken = handleRegister(parts, server);
@@ -76,13 +80,35 @@ public class ChessClient {
                     break;
                 case "observe":
                     handleObserve(parts, isLoggedIn, hasListedGames, games, authToken);
+                    isInGameplay = true;
+                    isObserving = true;
                     break;
                 case "play":
                     handlePlay(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    isInGameplay = true;
                     break;
                 case "quit":
                     System.out.println("Exiting chess client...");
                     isRunning = false;
+                    break;
+                case "redraw":
+                    handleRedraw(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    break;
+                case "leave":
+                    handleLeave(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    isInGameplay = false;
+                    isObserving = false;
+                    break;
+                case "move":
+                    handleMove(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    break;
+                case "resign":
+                    handleResign(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    isInGameplay = false;
+                    isObserving = false;
+                    break;
+                case "highlight":
+                    handleHighlight(parts, isLoggedIn, hasListedGames, games, authToken, server);
                     break;
                 default:
                     System.out.println("Unknown command. Type 'help' for available commands.");
@@ -92,7 +118,34 @@ public class ChessClient {
         scanner.close();
     }
 
-    private void printHelp(boolean isLoggedIn) {
+    private void handleRedraw(){
+
+    }
+
+    private void handleLeave(){
+
+    }
+
+    private void handleMove(){
+
+    }
+
+    private void handleResign(){
+
+    }
+
+    private void handleHighlight(){
+
+    }
+
+    private void printHelp(boolean isLoggedIn, boolean isInGameplay) {
+        if(isInGameplay){
+            System.out.println("  redraw - the board");
+            System.out.println("  leave - the game");
+            System.out.println("  move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> - a piece at a location to a provided location, if valid");
+            System.out.println("  resign - the game as a loss");
+            System.out.println("  highlight <PIECE_LOCATION> - the valid moves for a piece at a location");
+        }
         if (isLoggedIn) {
             System.out.println("  create <NAME> - a game");
             System.out.println("  list - games");
@@ -204,7 +257,7 @@ public class ChessClient {
         try {
             int gameNumber = Integer.parseInt(parts[1]);
             var game = games.get(gameNumber);
-            WebSocketFacade ws = new WebSocketFacade(port, new NotificationCentral(), WHITE);
+            ws = new WebSocketFacade(port, new NotificationCentral(), WHITE);
             ws.connect(authToken, game.gameID());
         } catch (Exception ex) {
             System.out.println("Failed to observe game");
@@ -230,7 +283,7 @@ public class ChessClient {
             var game = games.get(gameNumber);
             var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
             System.out.println(result.message());
-            WebSocketFacade ws = new WebSocketFacade(port, new NotificationCentral(), teamColor);
+            ws = new WebSocketFacade(port, new NotificationCentral(), teamColor);
             ws.connect(authToken, game.gameID());
         } catch (NumberFormatException ex) {
             System.out.println("<ID> Must be a number");
