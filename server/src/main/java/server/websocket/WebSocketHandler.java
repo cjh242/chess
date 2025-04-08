@@ -72,7 +72,7 @@ public class WebSocketHandler {
                 leave(auth.username(), command.getGameID());
                 break;
             case RESIGN :
-                unimplemented();
+                resign(auth.username(), command.getGameID());
                 break;
         }
 
@@ -180,9 +180,38 @@ public class WebSocketHandler {
 
 
 
-    private void resign(){
+    private void resign(String username, int gameID){
+        GameData game;
+        game = getGameData(username, gameID);
+        if (game == null) {
+            return;
+        }
+
+        if(!Objects.equals(game.whiteUsername(), username) && !Objects.equals(game.blackUsername(), username)){
+            connections.send(username, new ErrorMessage("Observers cannot resign. Leave instead."));
+            return;
+        }
+
         //mark game as over
+        game.game().setIsGameOver(true);
+
+        try {
+            gameService.update(game);
+        } catch (Exception ex) {
+            connections.send(username, new ErrorMessage("Failed to update game"));
+            return;
+        }
+
+
         //notify everyone that they resigned
+        if(Objects.equals(game.whiteUsername(), username)) {
+            connections.broadcast(username, gameID, new NotificationMessage(username + " (White) has resigned"));
+        }
+        else if(Objects.equals(game.blackUsername(), username)){
+            connections.broadcast(username, gameID, new NotificationMessage(username + " (Black) has resigned"));
+        }
+
+        connections.remove(username);
     }
 
     private GameData getGameData(String username, int gameID) {
@@ -199,9 +228,5 @@ public class WebSocketHandler {
             return null;
         }
         return game;
-    }
-
-    private void unimplemented(){
-
     }
 }
