@@ -96,11 +96,10 @@ public class GameService {
         }
     }
 
-    //private helpers
-    private GameData findGameByID(int gameID) throws DataAccessException {
+    public GameData findGameByID(int gameID) throws DataAccessException {
         return gameDao.findByID(gameID);
     }
-
+    //private helpers
     private void update(GameData game) throws DataAccessException {
         gameDao.update(game);
     }

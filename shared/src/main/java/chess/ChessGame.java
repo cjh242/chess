@@ -16,11 +16,21 @@ public class ChessGame {
         currentBoard = new ChessBoard();
         currentTeam = TeamColor.WHITE;
         currentBoard.resetBoard();
+        isGameOver = false;
     }
 
     private TeamColor currentTeam;
     private ChessBoard currentBoard;
+    private boolean isGameOver;
 
+
+    public boolean getIsGameOver(){
+        return isGameOver;
+    }
+
+    public void setIsGameOver(boolean isOver){
+        isGameOver = isOver;
+    }
     /**
      * @return Which team's turn it is
      */

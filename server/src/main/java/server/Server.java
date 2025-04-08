@@ -22,7 +22,7 @@ public class Server {
         this.authService = new AuthService();
         this.gameService = new GameService(this.authService);
         this.userService = new UserService(this.authService);
-        webSocketHandler = new WebSocketHandler(this.authService);
+        webSocketHandler = new WebSocketHandler(this.authService, this.gameService);
     }
 
     public int run(int desiredPort) {

@@ -19,12 +19,16 @@ public class ConnectionManager {
         connections.remove(username);
     }
 
-    public void broadcast(String excludeUserName, int gameID, ServerMessage message) throws IOException {
+    public void broadcast(String excludeUserName, int gameID, ServerMessage message) {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.username.equals(excludeUserName) && c.gameID == gameID) {
-                    c.send(message.toString());
+                    try{
+                        c.send(message.toString());
+                    } catch (Exception ex){
+
+                    }
                 }
             } else {
                 removeList.add(c);
@@ -34,6 +38,17 @@ public class ConnectionManager {
         // Clean up any connections that were left open.
         for (var c : removeList) {
             connections.remove(c.username);
+        }
+    }
+
+    public void send(String username, ServerMessage message) {
+        var connection = connections.get(username);
+        if(connection != null){
+            try {
+                connection.send(message.toString());
+            } catch (Exception ex){
+
+            }
         }
     }
 }
