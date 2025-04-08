@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static chess.ChessGame.TeamColor.WHITE;
+
 public class ChessClient {
 
     private int port;
@@ -73,7 +75,7 @@ public class ChessClient {
                     }
                     break;
                 case "observe":
-                    handleObserve(parts, isLoggedIn, hasListedGames, games);
+                    handleObserve(parts, isLoggedIn, hasListedGames, games, authToken);
                     break;
                 case "play":
                     handlePlay(parts, isLoggedIn, hasListedGames, games, authToken, server);
@@ -177,7 +179,7 @@ public class ChessClient {
                 return null;
             }
             for (var game : result.games()) {
-                PrintingHelper.printBoard(game.game().getBoard(), i++, game.gameName(), ChessGame.TeamColor.WHITE);
+                PrintingHelper.printBoard(game.game().getBoard(), i++, game.gameName(), WHITE);
             }
             return result;
         } catch (Exception ex) {
@@ -186,7 +188,7 @@ public class ChessClient {
         }
     }
 
-    private void handleObserve(String[] parts, boolean isLoggedIn, boolean hasListedGames, List<GameData> games) {
+    private void handleObserve(String[] parts, boolean isLoggedIn, boolean hasListedGames, List<GameData> games, String authToken) {
         if (!isLoggedIn) {
             System.out.println("Please first login or register");
             return;
@@ -202,7 +204,8 @@ public class ChessClient {
         try {
             int gameNumber = Integer.parseInt(parts[1]);
             var game = games.get(gameNumber);
-            PrintingHelper.printBoard(game.game().getBoard(), gameNumber, game.gameName(), ChessGame.TeamColor.WHITE);
+            WebSocketFacade ws = new WebSocketFacade(port, new NotificationCentral(), WHITE);
+            ws.connect(authToken, game.gameID());
         } catch (Exception ex) {
             System.out.println("Failed to observe game");
         }
