@@ -80,6 +80,8 @@ public class WebSocketHandler {
 
     }
 
+    //TODO: ADD CHECKS ON ALL OF THESE TO CHECK IF THE GAME IS OVER
+
     private void connect(String username, int gameID){
         //send a LOAD_GAME back to the client
         GameData game = getGameData(username, gameID);
@@ -130,6 +132,7 @@ public class WebSocketHandler {
         //if the move results in check, checkmate, or stalemate everyone is notified
         if(game.game().isInCheck(WHITE) || game.game().isInCheck(BLACK)) {
             if(game.game().isInCheckmate(WHITE) || game.game().isInCheckmate(BLACK)) {
+                //TODO: ADD NAME
                 connections.broadcast(username, gameID, new NotificationMessage("CHECKMATE"));
                 //mark game as over
                 game.game().setIsGameOver(true);

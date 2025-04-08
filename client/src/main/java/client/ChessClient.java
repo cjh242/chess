@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import dataobjects.GameData;
@@ -20,6 +21,9 @@ public class ChessClient {
 
     private int port;
     private WebSocketFacade ws = null;
+    private int gameID;
+    private GameData game;
+    private ChessGame.TeamColor perspective = WHITE;
 
     public ChessClient(){
         this.port = -1;
@@ -34,7 +38,6 @@ public class ChessClient {
         boolean isInGameplay = false;
         boolean isObserving = false;
         String authToken = null;
-        WebSocketFacade ws = null;
         int gameNumber = 0;
         List<GameData> games = new ArrayList<>();
 
@@ -90,25 +93,26 @@ public class ChessClient {
                 case "quit":
                     System.out.println("Exiting chess client...");
                     isRunning = false;
+                    perspective = WHITE;
                     break;
                 case "redraw":
-                    handleRedraw(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    handleRedraw(isLoggedIn, isInGameplay, authToken);
                     break;
                 case "leave":
-                    handleLeave(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    handleLeave(isLoggedIn, isInGameplay, authToken);
                     isInGameplay = false;
                     isObserving = false;
                     break;
                 case "move":
-                    handleMove(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    handleMove(parts, isLoggedIn, isInGameplay, authToken, isObserving);
                     break;
                 case "resign":
-                    handleResign(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    handleResign(isLoggedIn, isInGameplay, authToken, isObserving);
                     isInGameplay = false;
                     isObserving = false;
                     break;
                 case "highlight":
-                    handleHighlight(parts, isLoggedIn, hasListedGames, games, authToken, server);
+                    handleHighlight(parts, isLoggedIn, isInGameplay);
                     break;
                 default:
                     System.out.println("Unknown command. Type 'help' for available commands.");
@@ -118,24 +122,102 @@ public class ChessClient {
         scanner.close();
     }
 
-    private void handleRedraw(){
+    private void handleRedraw(boolean isLoggedIn, boolean isInGameplay, String authToken){
+        if(!isLoggedIn){
+            System.out.println("Must be logged in, and in a game to redraw");
+        }
+        if(!isInGameplay){
+            System.out.println("Must be in a game to redraw");
+        }
+        //TODO: WRITE REDRAW IN PRINTING HELPER AND IMPLEMENT
+    }
+
+    private void handleLeave(boolean isLoggedIn, boolean isInGameplay, String authToken){
+        if(!isLoggedIn){
+            System.out.println("Must be logged in, and in a game to leave");
+        }
+        if(!isInGameplay){
+            System.out.println("Must be in a game to leave");
+        }
+        ws.leave(authToken, gameID);
+        perspective = WHITE;
+        System.out.println("You have left the game");
+    }
+
+    private void handleMove(String[] parts, boolean isLoggedIn, boolean isInGameplay, String authToken, boolean isObserving){
+        if(!isLoggedIn){
+            System.out.println("Must be logged in, and in a game to move");
+        }
+        if(!isInGameplay){
+            System.out.println("Must be in a game to move");
+        }
+        if(isObserving){
+            System.out.println("Observers cannot move");
+        }
+        //TODO: CREATE THE MOVE FROM THE PARTS
+
 
     }
 
-    private void handleLeave(){
-
+    private void handleResign(boolean isLoggedIn, boolean isInGameplay, String authToken, boolean isObserving){
+        if(!isLoggedIn){
+            System.out.println("Must be logged in, and in a game to resign");
+        }
+        if(!isInGameplay){
+            System.out.println("Must be in a game to resign");
+        }
+        if(isObserving){
+            System.out.println("Observers cannot resign");
+        }
+        ws.resign(authToken, gameID);
+        perspective = WHITE;
+        System.out.println("You have resigned from the game");
     }
 
-    private void handleMove(){
+    private void handleHighlight(String[] parts, boolean isLoggedIn, boolean isInGameplay){
+        if(!isLoggedIn){
+            System.out.println("Must be logged in, and in a game to highlight");
+            return;
+        }
+        if(!isInGameplay){
+            System.out.println("Must be in a game to highlight");
+            return;
+        }
+        if (parts.length != 2) {
+            System.out.println("Usage: highlight <PIECE_LOCATION>");
+            System.out.println("Example: highlight a4");
+            return;
+        }
+        //READ POSITION
+        if(parts[1].length() != 2){
+            System.out.println("Position should be two characters. Example: a4");
+            return;
+        }
+        var colChar = parts[1].charAt(0);
+        var rowChar = parts[1].charAt(1);
+        // Validate column character ('a' to 'h')
+        if (Character.isLetter(colChar) && (colChar < 'a' || colChar > 'h')) {
+            System.out.println("Invalid column character in notation: " + colChar);
+        }
+        // Validate row character ('1' to '8')
+        if (Character.isDigit(rowChar) && (rowChar < '1' || rowChar > '8')) {
+            System.out.println("Invalid row character in notation: " + rowChar);
+        }
+        int col = colChar - 'a' + 1;
+        int row = Character.getNumericValue(rowChar);
+        var position = new ChessPosition(row, col);
 
-    }
+        //GET THE VALID MOVES
+        var moves = game.game().validMoves(position);
+        List<ChessPosition> positions = new ArrayList<>();
+        positions.add(position);
 
-    private void handleResign(){
+        for (var move: moves){
+            positions.add(move.getEndPosition());
+        }
 
-    }
-
-    private void handleHighlight(){
-
+        //PRINT
+        PrintingHelper.highlightValidMoves(game.game().getBoard(), perspective, positions);
     }
 
     private void printHelp(boolean isLoggedIn, boolean isInGameplay) {
@@ -193,6 +275,7 @@ public class ChessClient {
     private boolean handleLogout(String authToken, ServerFacade server) {
         try {
             var result = server.logout(new LogoutRequest(authToken));
+            perspective = WHITE;
             System.out.println(result.message());
             return result.isOk();
         } catch (Exception ex) {
@@ -259,6 +342,8 @@ public class ChessClient {
             var game = games.get(gameNumber);
             ws = new WebSocketFacade(port, new NotificationCentral(), WHITE);
             ws.connect(authToken, game.gameID());
+            gameID = game.gameID();
+            this.game = game;
         } catch (Exception ex) {
             System.out.println("Failed to observe game");
         }
@@ -280,11 +365,14 @@ public class ChessClient {
         try {
             int gameNumber = Integer.parseInt(parts[1]);
             var teamColor = ChessGame.TeamColor.valueOf(parts[2].toUpperCase());
+            perspective = teamColor;
             var game = games.get(gameNumber);
             var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
             System.out.println(result.message());
             ws = new WebSocketFacade(port, new NotificationCentral(), teamColor);
             ws.connect(authToken, game.gameID());
+            gameID = game.gameID();
+            this.game = game;
         } catch (NumberFormatException ex) {
             System.out.println("<ID> Must be a number");
         } catch (IllegalArgumentException ex) {
