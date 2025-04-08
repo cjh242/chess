@@ -1,5 +1,7 @@
 package server.websocket;
 
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataobjects.AuthData;
 import dataobjects.GameData;
@@ -8,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.AuthService;
 import service.GameService;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -18,6 +21,8 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 
 @WebSocket
@@ -56,10 +61,19 @@ public class WebSocketHandler {
 
         //ACT ON THE COMMAND
         switch (command.getCommandType()) {
-            case CONNECT -> connect(auth.username(), command.getGameID());
-            case MAKE_MOVE -> unimplemented();
-            case LEAVE -> unimplemented();
-            case RESIGN -> unimplemented();
+            case CONNECT :
+                connect(auth.username(), command.getGameID());
+                break;
+            case MAKE_MOVE :
+                MakeMoveCommand moveCommand = (MakeMoveCommand) command;
+                makeMove(moveCommand.getGameID(), moveCommand.getMove(), auth.username());
+                break;
+            case LEAVE :
+                unimplemented();
+                break;
+            case RESIGN :
+                unimplemented();
+                break;
         }
 
 
@@ -94,12 +108,50 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(){
-        //verify move valid
-        //game is updated to have made move, including in database
+    private void makeMove(int gameID, ChessMove move, String username){
+        GameData game = null;
+        try{
+            game = gameService.findGameByID(gameID);
+        } catch (Exception ex){
+            connections.send(username, new ErrorMessage("An unknown error occurred finding the game"));
+            return;
+        }
+
+        try{
+            game.game().makeMove(move);
+        } catch (InvalidMoveException ex){
+            connections.send(username, new ErrorMessage("Invalid Move"));
+            return;
+        }
+
+        try{
+            gameService.update(game);
+        } catch (Exception ex){
+            connections.send(username, new ErrorMessage("Error updating game"));
+        }
+
         //all others in this game are sent a LOAD_GAME
+        connections.broadcast(null, gameID, new LoadGameMessage(game));
+
         //all others are sent a notification that the move was made (including what it was)
+        //TODO: write a toMessageString that says what the move was
+        connections.broadcast(username, gameID, new NotificationMessage(username + " made move"));
+
         //if the move results in check, checkmate, or stalemate everyone is notified
+        if(game.game().isInCheck(WHITE) || game.game().isInCheck(BLACK)) {
+            if(game.game().isInCheckmate(WHITE) || game.game().isInCheckmate(BLACK)) {
+                connections.broadcast(username, gameID, new NotificationMessage("CHECKMATE"));
+                //mark game as over
+                game.game().setIsGameOver(true);
+            } else {
+                connections.broadcast(username, gameID, new NotificationMessage("CHECK"));
+            }
+        }
+        if(game.game().isInStalemate(WHITE) || game.game().isInStalemate(BLACK)){
+            connections.broadcast(username, gameID, new NotificationMessage("STALEMATE"));
+            //mark game as over
+            game.game().setIsGameOver(true);
+        }
     }
 
     private void leave(){
