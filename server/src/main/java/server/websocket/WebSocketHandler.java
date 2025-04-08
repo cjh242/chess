@@ -69,7 +69,7 @@ public class WebSocketHandler {
                 makeMove(moveCommand.getGameID(), moveCommand.getMove(), auth.username());
                 break;
             case LEAVE :
-                unimplemented();
+                leave(auth.username(), command.getGameID());
                 break;
             case RESIGN :
                 unimplemented();
@@ -82,18 +82,8 @@ public class WebSocketHandler {
 
     private void connect(String username, int gameID){
         //send a LOAD_GAME back to the client
-        GameData game = null;
-        try{
-            game = gameService.findGameByID(gameID);
-        } catch (Exception ex){
-            connections.send(username, new ErrorMessage("An unknown error occurred finding the game"));
-            return;
-        }
-
-        if(game == null){
-            connections.send(username, new ErrorMessage("Game not found"));
-            return;
-        }
+        GameData game = getGameData(username, gameID);
+        if (game == null) return;
         connections.send(username,new LoadGameMessage(game));
 
         //tell all others in this game that someone connected, either as observer or player(including which color)
@@ -154,28 +144,61 @@ public class WebSocketHandler {
         }
     }
 
-    private void leave(){
+    private void leave(String username, int gameID){
         //game is updated to remove the client
+        GameData game;
+        game = getGameData(username, gameID);
+        if (game == null) {
+            return;
+        }
+
+        if(Objects.equals(game.whiteUsername(), username)){
+            //update the game
+            game.addWhiteUsername(null);
+            try {
+                gameService.update(game);
+            } catch (Exception ex) {
+                connections.send(username, new ErrorMessage("Failed to update game"));
+                return;
+            }
+
+        }
+        else if(Objects.equals(game.blackUsername(), username)){
+            game.addBlackUsername(null);
+            try {
+                gameService.update(game);
+            } catch (Exception ex) {
+                connections.send(username, new ErrorMessage("Failed to update game"));
+                return;
+            }
+        }
+
+        connections.remove(username);
         //notify everyone that they left
+        connections.broadcast(username, gameID, new NotificationMessage(username + " left the game"));
     }
+
+
 
     private void resign(){
         //mark game as over
         //notify everyone that they resigned
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
-//        connections.add(visitorName, session);
-//        var message = String.format("%s is in the shop", visitorName);
-//        var notification = new Notification(Notification.Type.ARRIVAL, message);
-//        connections.broadcast(visitorName, notification);
-    }
+    private GameData getGameData(String username, int gameID) {
+        GameData game;
+        try{
+            game = gameService.findGameByID(gameID);
+        } catch (Exception ex){
+            connections.send(username, new ErrorMessage("An unknown error occurred finding the game"));
+            return null;
+        }
 
-    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
+        if(game == null){
+            connections.send(username, new ErrorMessage("Game not found"));
+            return null;
+        }
+        return game;
     }
 
     private void unimplemented(){
