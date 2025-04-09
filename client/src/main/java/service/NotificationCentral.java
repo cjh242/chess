@@ -20,7 +20,7 @@ public class NotificationCentral implements NotificationHandler {
                 break;
             case ERROR :
                 var error = (ErrorMessage) message;
-                displayError(error.getError());
+                displayError(error.getErrorMessage());
                 break;
             case LOAD_GAME :
                 try{

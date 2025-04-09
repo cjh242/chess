@@ -51,8 +51,12 @@ public class WebSocketHandler {
             isAuthenticated = false;
         }
 
-        //IF NOT AUTH, DO NOTHING
+        //IF NOT AUTH SEND ERROR
         if(!isAuthenticated || auth == null){
+            var errorMessage = new ErrorMessage("Not Authorized");
+            String jsonMessage = new Gson().toJson(errorMessage);
+            var connection = new Connection(null, 0, session);
+            connection.send(jsonMessage);
             return;
         }
 
