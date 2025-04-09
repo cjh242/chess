@@ -157,24 +157,35 @@ public class WebSocketHandler {
 
         //all others are sent a notification that the move was made (including what it was)
         //TODO: write a toMessageString that says what the move was
-        connections.broadcast(username, gameID, new NotificationMessage(username + " made move"));
+        var messageString = username + " made move";
 
         //if the move results in check, checkmate, or stalemate everyone is notified
-        if(game.game().isInCheck(WHITE) || game.game().isInCheck(BLACK)) {
-            if(game.game().isInCheckmate(WHITE) || game.game().isInCheckmate(BLACK)) {
-                //TODO: ADD NAME
-                connections.broadcast(username, gameID, new NotificationMessage("CHECKMATE"));
+        if(game.game().isInCheck(WHITE)) {
+            if(game.game().isInCheckmate(WHITE)) {
+                messageString += ", " + game.whiteUsername() + "in CHECKMATE";
                 //mark game as over
                 game.game().setIsGameOver(true);
             } else {
-                connections.broadcast(username, gameID, new NotificationMessage("CHECK"));
+                messageString += ", " + game.whiteUsername() + "in CHECK";
+            }
+        }
+        //if the move results in check, checkmate, or stalemate everyone is notified
+        if(game.game().isInCheck(BLACK)) {
+            if(game.game().isInCheckmate(BLACK)) {
+                messageString += ", " + game.blackUsername() + "in CHECKMATE";
+                //mark game as over
+                game.game().setIsGameOver(true);
+            } else {
+                messageString += ", " + game.blackUsername() + "in CHECKMATE";
             }
         }
         if(game.game().isInStalemate(WHITE) || game.game().isInStalemate(BLACK)){
-            connections.broadcast(username, gameID, new NotificationMessage("STALEMATE"));
+            messageString += ", STALEMATE";
             //mark game as over
             game.game().setIsGameOver(true);
         }
+
+        connections.broadcast(username, gameID, new NotificationMessage(messageString));
     }
 
     private void leave(String username, int gameID){
