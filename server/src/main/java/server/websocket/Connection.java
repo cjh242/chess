@@ -11,6 +11,7 @@ public class Connection {
     public Connection(String username, int gameID, Session session) {
         this.username = username;
         this.session = session;
+        this.gameID = gameID;
     }
 
     public void send(String msg) throws IOException {

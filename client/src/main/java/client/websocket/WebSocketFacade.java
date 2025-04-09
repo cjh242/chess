@@ -6,6 +6,9 @@ import com.google.gson.Gson;
 import service.URLBuilder;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -34,7 +37,23 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(serverMessage, perspective);
+
+                    ServerMessage actualMessage = null;
+                    switch (serverMessage.getServerMessageType()) {
+                        case LOAD_GAME:
+                            actualMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                            break;
+                        case ERROR:
+                            actualMessage = new Gson().fromJson(message, ErrorMessage.class);
+                            break;
+                        case NOTIFICATION:
+                            actualMessage = new Gson().fromJson(message, NotificationMessage.class);
+                            break;
+                        default:
+                            System.err.println("Unknown server message type received");
+                            return;
+                    }
+                    notificationHandler.notify(actualMessage, perspective);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

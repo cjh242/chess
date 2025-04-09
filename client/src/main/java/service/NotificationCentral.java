@@ -23,8 +23,12 @@ public class NotificationCentral implements NotificationHandler {
                 displayError(error.getError());
                 break;
             case LOAD_GAME :
-                var load = (LoadGameMessage) message;
-                loadGame(load.getGame(), perspective);
+                try{
+                    var load = (LoadGameMessage) message;
+                    loadGame(load.getGame(), perspective);
+                } catch (Exception ex){
+                    System.out.println(ex);
+                }
                 break;
         }
     }
