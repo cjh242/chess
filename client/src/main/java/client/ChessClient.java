@@ -57,15 +57,12 @@ public class ChessClient {
             } else {
                 System.out.print("\n[LOGGED_OUT] >>> ");
             }
-
             String input = scanner.nextLine().trim();
             String[] parts = input.split("\\s+");
             if (parts.length == 0) {
                 continue;
             }
-
             String command = parts[0].toLowerCase();
-
             switch (command) {
                 case "help":
                     printHelp(isLoggedIn, isInGameplay);
