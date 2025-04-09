@@ -9,4 +9,12 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
     public GameData addBlackUsername(String username) {
         return new GameData(this.gameID(), this.whiteUsername(), username, this.gameName(), this.game());
     }
+
+    public GameData removeWhiteUsername() {
+        return new GameData(this.gameID(), null, this.blackUsername(), this.gameName(), this.game());
+    }
+
+    public GameData removeBlackUsername() {
+        return new GameData(this.gameID(), this.whiteUsername(), null, this.gameName(), this.game());
+    }
 }

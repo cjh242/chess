@@ -84,7 +84,6 @@ public class WebSocketHandler {
 
     }
 
-    //TODO: ADD CHECKS ON ALL OF THESE TO CHECK IF THE GAME IS OVER
 
     private void connect(String username, int gameID){
         //send a LOAD_GAME back to the client
@@ -186,13 +185,9 @@ public class WebSocketHandler {
             return;
         }
 
-        if(gameOverHandler(game, username)){
-            return;
-        }
-
         if(Objects.equals(game.whiteUsername(), username)){
             //update the game
-            game.addWhiteUsername(null);
+            game = game.removeWhiteUsername();
             try {
                 gameService.update(game);
             } catch (Exception ex) {
@@ -202,7 +197,7 @@ public class WebSocketHandler {
 
         }
         else if(Objects.equals(game.blackUsername(), username)){
-            game.addBlackUsername(null);
+            game = game.removeBlackUsername();
             try {
                 gameService.update(game);
             } catch (Exception ex) {
