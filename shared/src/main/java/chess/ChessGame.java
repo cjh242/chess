@@ -91,7 +91,6 @@ public class ChessGame {
         for(ChessMove move: moves){
             ChessBoard potentialBoard = new ChessBoard(currentBoard);
             potentialBoard.movePiece(move, currentTeam);
-            System.out.println(potentialBoard);
             if(!isInCheck(piece.getTeamColor(), potentialBoard)){
                 validMoves.add(move);
             }

@@ -36,15 +36,18 @@ public class NotificationCentral implements NotificationHandler {
     }
 
     private void displayNotification(String message){
+        System.out.println();
         System.out.println(message);
     }
 
     private void displayError(String error){
+        System.out.println();
         System.out.println(error);
     }
 
     private void loadGame(GameData game, ChessGame.TeamColor perspective){
         this.game = game;
+        System.out.println();
         PrintingHelper.printBoard(game.game().getBoard(), -1, null, perspective);
     }
 

@@ -216,9 +216,10 @@ public class ChessClient {
         if(parts.length == 3){
             var move = new ChessMove(startPosition, endPosition, null);
             ws.makeMove(authToken, gameID, move);
+            return;
         }
 
-        if(parts.length == 4 && parts[3].length() != 1){
+        if(parts[3].length() != 1){
             System.out.println("Promotion piece must be: Q, K, B, R");
             return;
         }
@@ -257,7 +258,6 @@ public class ChessClient {
         }
         ws.resign(authToken, gameID);
         perspective = WHITE;
-        System.out.println("You have resigned from the game");
     }
 
     private void handleHighlight(String[] parts, boolean isLoggedIn, boolean isInGameplay){
@@ -303,7 +303,7 @@ public class ChessClient {
         }
 
         //PRINT
-        PrintingHelper.highlightValidMoves(notificationCentral.getGame().game().getBoard(), perspective, positions);
+        PrintingHelper.printBoard(notificationCentral.getGame().game().getBoard(), perspective, positions);
     }
 
     private void printHelp(boolean isLoggedIn, boolean isInGameplay) {
