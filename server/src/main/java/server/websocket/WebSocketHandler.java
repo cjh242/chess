@@ -156,8 +156,7 @@ public class WebSocketHandler {
         connections.broadcast(null, gameID, new LoadGameMessage(game));
 
         //all others are sent a notification that the move was made (including what it was)
-        //TODO: write a toMessageString that says what the move was
-        var messageString = username + " made move";
+        var messageString = username + " made move " + move.toMessageString();
 
         //if the move results in check, checkmate, or stalemate everyone is notified
         if(game.game().isInCheck(WHITE)) {
