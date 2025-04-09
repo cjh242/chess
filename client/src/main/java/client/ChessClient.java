@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
@@ -16,17 +17,19 @@ import java.util.List;
 import java.util.Scanner;
 
 import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.*;
 
 public class ChessClient {
 
     private int port;
     private WebSocketFacade ws = null;
     private int gameID;
-    private GameData game;
     private ChessGame.TeamColor perspective = WHITE;
+    private final NotificationCentral notificationCentral;
 
     public ChessClient(){
         this.port = -1;
+        this.notificationCentral = new NotificationCentral();
     }
 
     public void runChessClient(int port) {
@@ -46,7 +49,14 @@ public class ChessClient {
         System.out.println("\uD83C\uDF1F Welcome to 240 Chess. Type Help to get started. \uD83C\uDF1F");
 
         while (isRunning) {
-            System.out.print(isLoggedIn ? "\n[LOGGED_IN] >>> " : "\n[LOGGED_OUT] >>> ");
+            if (isLoggedIn && isInGameplay) {
+                System.out.print("\n[GAMEPLAY] >>> ");
+            } else if (isLoggedIn) {
+                System.out.print("\n[LOGGED_IN] >>> ");
+            } else {
+                System.out.print("\n[LOGGED_OUT] >>> ");
+            }
+
             String input = scanner.nextLine().trim();
             String[] parts = input.split("\\s+");
             if (parts.length == 0) {
@@ -129,7 +139,7 @@ public class ChessClient {
         if(!isInGameplay){
             System.out.println("Must be in a game to redraw");
         }
-        //TODO: WRITE REDRAW IN PRINTING HELPER AND IMPLEMENT
+        PrintingHelper.printBoard(notificationCentral.getGame().game().getBoard(), -1, null, perspective);
     }
 
     private void handleLeave(boolean isLoggedIn, boolean isInGameplay, String authToken){
@@ -147,16 +157,92 @@ public class ChessClient {
     private void handleMove(String[] parts, boolean isLoggedIn, boolean isInGameplay, String authToken, boolean isObserving){
         if(!isLoggedIn){
             System.out.println("Must be logged in, and in a game to move");
+            return;
         }
         if(!isInGameplay){
             System.out.println("Must be in a game to move");
+            return;
         }
         if(isObserving){
             System.out.println("Observers cannot move");
+            return;
         }
-        //TODO: CREATE THE MOVE FROM THE PARTS
+        if(parts.length != 3 && parts.length != 4){
+            System.out.println("Usage: move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> [OPTIONAL_PROMOTION_PIECE]- a piece at a location to a provided location, if valid");
+            return;
+        }
 
+        //READ POSITIONS
+        if(parts[1].length() != 2){
+            System.out.println("Position should be two characters. Example: a4");
+            return;
+        }
+        var colChar = parts[1].charAt(0);
+        var rowChar = parts[1].charAt(1);
+        // Validate column character ('a' to 'h')
+        if (Character.isLetter(colChar) && (colChar < 'a' || colChar > 'h')) {
+            System.out.println("Invalid column character in notation: " + colChar);
+            return;
+        }
+        // Validate row character ('1' to '8')
+        if (Character.isDigit(rowChar) && (rowChar < '1' || rowChar > '8')) {
+            System.out.println("Invalid row character in notation: " + rowChar);
+            return;
+        }
+        int col = colChar - 'a' + 1;
+        int row = Character.getNumericValue(rowChar);
+        var startPosition = new ChessPosition(row, col);
 
+        if(parts[2].length() != 2){
+            System.out.println("Position should be two characters. Example: a4");
+            return;
+        }
+        colChar = parts[2].charAt(0);
+        rowChar = parts[2].charAt(1);
+        // Validate column character ('a' to 'h')
+        if (Character.isLetter(colChar) && (colChar < 'a' || colChar > 'h')) {
+            System.out.println("Invalid column character in notation: " + colChar);
+            return;
+        }
+        // Validate row character ('1' to '8')
+        if (Character.isDigit(rowChar) && (rowChar < '1' || rowChar > '8')) {
+            System.out.println("Invalid row character in notation: " + rowChar);
+            return;
+        }
+        col = colChar - 'a' + 1;
+        row = Character.getNumericValue(rowChar);
+        var endPosition = new ChessPosition(row, col);
+
+        if(parts.length == 3){
+            var move = new ChessMove(startPosition, endPosition, null);
+            ws.makeMove(authToken, gameID, move);
+        }
+
+        if(parts.length == 4 && parts[3].length() != 1){
+            System.out.println("Promotion piece must be: Q, K, B, R");
+            return;
+        }
+
+        ChessMove move = null;
+        switch (parts[3].toLowerCase()) {
+            case "q":
+                move = new ChessMove(startPosition, endPosition, QUEEN);
+                break;
+            case "k":
+                move = new ChessMove(startPosition, endPosition, KNIGHT);
+                break;
+            case "b":
+                move = new ChessMove(startPosition, endPosition, BISHOP);
+                break;
+            case "r":
+                move = new ChessMove(startPosition, endPosition, ROOK);
+                break;
+            default:
+                System.out.println("Promotion piece must be: Q, K, B, R");
+                return;
+        }
+
+        ws.makeMove(authToken, gameID, move);
     }
 
     private void handleResign(boolean isLoggedIn, boolean isInGameplay, String authToken, boolean isObserving){
@@ -208,7 +294,7 @@ public class ChessClient {
         var position = new ChessPosition(row, col);
 
         //GET THE VALID MOVES
-        var moves = game.game().validMoves(position);
+        var moves = notificationCentral.getGame().game().validMoves(position);
         List<ChessPosition> positions = new ArrayList<>();
         positions.add(position);
 
@@ -217,14 +303,14 @@ public class ChessClient {
         }
 
         //PRINT
-        PrintingHelper.highlightValidMoves(game.game().getBoard(), perspective, positions);
+        PrintingHelper.highlightValidMoves(notificationCentral.getGame().game().getBoard(), perspective, positions);
     }
 
     private void printHelp(boolean isLoggedIn, boolean isInGameplay) {
         if(isInGameplay){
             System.out.println("  redraw - the board");
             System.out.println("  leave - the game");
-            System.out.println("  move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> - a piece at a location to a provided location, if valid");
+            System.out.println("  move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> [OPTIONAL_PROMOTION_PIECE]- a piece at a location to a provided location, if valid");
             System.out.println("  resign - the game as a loss");
             System.out.println("  highlight <PIECE_LOCATION> - the valid moves for a piece at a location");
         }
@@ -340,10 +426,9 @@ public class ChessClient {
         try {
             int gameNumber = Integer.parseInt(parts[1]);
             var game = games.get(gameNumber);
-            ws = new WebSocketFacade(port, new NotificationCentral(), WHITE);
+            ws = new WebSocketFacade(port, notificationCentral, WHITE);
             ws.connect(authToken, game.gameID());
             gameID = game.gameID();
-            this.game = game;
         } catch (Exception ex) {
             System.out.println("Failed to observe game");
         }
@@ -369,10 +454,9 @@ public class ChessClient {
             var game = games.get(gameNumber);
             var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
             System.out.println(result.message());
-            ws = new WebSocketFacade(port, new NotificationCentral(), teamColor);
+            ws = new WebSocketFacade(port, notificationCentral, teamColor);
             ws.connect(authToken, game.gameID());
             gameID = game.gameID();
-            this.game = game;
         } catch (NumberFormatException ex) {
             System.out.println("<ID> Must be a number");
         } catch (IllegalArgumentException ex) {

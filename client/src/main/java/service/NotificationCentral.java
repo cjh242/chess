@@ -10,6 +10,8 @@ import websocket.messages.ServerMessage;
 
 public class NotificationCentral implements NotificationHandler {
 
+    private GameData game= null;
+
 
     @Override
     public void notify(ServerMessage message, ChessGame.TeamColor perspective) {
@@ -42,6 +44,11 @@ public class NotificationCentral implements NotificationHandler {
     }
 
     private void loadGame(GameData game, ChessGame.TeamColor perspective){
+        this.game = game;
         PrintingHelper.printBoard(game.game().getBoard(), -1, null, perspective);
+    }
+
+    public GameData getGame(){
+        return game;
     }
 }
