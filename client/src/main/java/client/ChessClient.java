@@ -118,9 +118,11 @@ public class ChessClient {
                     handleMove(parts, isLoggedIn, isInGameplay, authToken, isObserving);
                     break;
                 case "resign":
-                    handleResign(isLoggedIn, isInGameplay, authToken, isObserving);
-                    isInGameplay = false;
-                    isObserving = false;
+                    var resigned = handleResign(isLoggedIn, isInGameplay, authToken, isObserving);
+                    if(resigned){
+                        isInGameplay = false;
+                        isObserving = false;
+                    }
                     break;
                 case "highlight":
                     handleHighlight(parts, isLoggedIn, isInGameplay);
@@ -248,18 +250,30 @@ public class ChessClient {
         ws.makeMove(authToken, gameID, move);
     }
 
-    private void handleResign(boolean isLoggedIn, boolean isInGameplay, String authToken, boolean isObserving){
+    private boolean handleResign(boolean isLoggedIn, boolean isInGameplay, String authToken, boolean isObserving){
         if(!isLoggedIn){
             System.out.println("Must be logged in, and in a game to resign");
+            return false;
         }
         if(!isInGameplay){
             System.out.println("Must be in a game to resign");
+            return false;
         }
         if(isObserving){
             System.out.println("Observers cannot resign");
+            return false;
         }
-        ws.command(authToken, gameID, RESIGN);
-        perspective = WHITE;
+
+        System.out.println("Are you sure you want to resign? y/n");
+        String input = new Scanner(System.in).nextLine().trim();
+        if(input.equalsIgnoreCase("y")){
+            ws.command(authToken, gameID, RESIGN);
+            perspective = WHITE;
+            return true;
+        } else {
+            System.out.println("Resign canceled");
+            return false;
+        }
     }
 
     private void handleHighlight(String[] parts, boolean isLoggedIn, boolean isInGameplay){

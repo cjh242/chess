@@ -163,21 +163,21 @@ public class WebSocketHandler {
         //if the move results in check, checkmate, or stalemate everyone is notified
         if(game.game().isInCheck(WHITE)) {
             if(game.game().isInCheckmate(WHITE)) {
-                messageString += ", " + game.whiteUsername() + "in CHECKMATE";
+                messageString += ", " + game.whiteUsername() + " in CHECKMATE";
                 //mark game as over
                 game.game().setIsGameOver(true);
             } else {
-                messageString += ", " + game.whiteUsername() + "in CHECK";
+                messageString += ", " + game.whiteUsername() + " in CHECK";
             }
         }
         //if the move results in check, checkmate, or stalemate everyone is notified
         if(game.game().isInCheck(BLACK)) {
             if(game.game().isInCheckmate(BLACK)) {
-                messageString += ", " + game.blackUsername() + "in CHECKMATE";
+                messageString += ", " + game.blackUsername() + " in CHECKMATE";
                 //mark game as over
                 game.game().setIsGameOver(true);
             } else {
-                messageString += ", " + game.blackUsername() + "in CHECKMATE";
+                messageString += ", " + game.blackUsername() + " in CHECK";
             }
         }
         if(game.game().isInStalemate(WHITE) || game.game().isInStalemate(BLACK)){
