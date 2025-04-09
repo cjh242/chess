@@ -69,7 +69,7 @@ public class WebSocketHandler {
                 connect(auth.username(), command.getGameID());
                 break;
             case MAKE_MOVE :
-                MakeMoveCommand moveCommand = (MakeMoveCommand) command;
+                var moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(moveCommand.getGameID(), moveCommand.getMove(), auth.username());
                 break;
             case LEAVE :
