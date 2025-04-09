@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static chess.ChessGame.TeamColor.BLACK;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameDAOTests {
@@ -43,6 +44,30 @@ public class GameDAOTests {
         var retrievedGame = gameDao.findByID(updatedGame.gameID());
 
         assertEquals(updatedGame, retrievedGame);
+    }
+
+    @Test
+    @DisplayName("Update Game Data")
+    public void updateGameData() throws DataAccessException {
+
+        var game = gameDao.addGame("NEW_GAME");
+        game.game().setIsGameOver(true);
+        gameDao.update(game);
+        var retrievedGame = gameDao.findByID(game.gameID());
+
+        assertEquals(game, retrievedGame);
+    }
+
+    @Test
+    @DisplayName("Update Game Set Team Turn")
+    public void updateGameTurn() throws DataAccessException {
+
+        var game = gameDao.addGame("NEW_GAME");
+        game.game().setTeamTurn(BLACK);
+        gameDao.update(game);
+        var retrievedGame = gameDao.findByID(game.gameID());
+
+        assertEquals(game, retrievedGame);
     }
 
     @Test

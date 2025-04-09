@@ -76,8 +76,11 @@ public class GameDAO implements IGameDAO{
 
     public GameData update(GameData game) throws DataAccessException {
         var statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?;";
-        var json = new Gson().toJson(game);
-        var id = dbAssist.executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json, game.gameID());
-        return findByID(id);
+        var json = new Gson().toJson(game.game());
+        int rowsAffected = dbAssist.executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json, game.gameID());
+        if(rowsAffected != 1){
+            throw new DataAccessException("Row not updated");
+        }
+        return findByID(game.gameID());
     }
 }

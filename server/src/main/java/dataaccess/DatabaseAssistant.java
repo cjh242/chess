@@ -14,7 +14,7 @@ public class DatabaseAssistant {
           whiteUsername VARCHAR(256) NULL,
           blackUsername VARCHAR(256) NULL,
           gameName VARCHAR(256) NOT NULL,
-          game BLOB NOT NULL,
+          game LONGTEXT NOT NULL,
           PRIMARY KEY (gameID)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
         """,
@@ -46,6 +46,7 @@ public class DatabaseAssistant {
             System.err.println("Failed to create database: " + ex.getMessage());
         }
         try (var conn = DatabaseManager.getConnection()) {
+            conn.setAutoCommit(true);
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
@@ -66,14 +67,19 @@ public class DatabaseAssistant {
                     else if (param instanceof Integer p){ ps.setInt(i + 1, p); }
                     else if (param == null){ ps.setNull(i + 1, NULL); }
                 }
-                ps.executeUpdate();
+
+                var rowsAffected = ps.executeUpdate();
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
+//
+//                if(rowsAffected > 0){
+//                    conn.commit();
+//                }
 
-                return 0;
+                return rowsAffected;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));

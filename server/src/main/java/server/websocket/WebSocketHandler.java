@@ -90,6 +90,10 @@ public class WebSocketHandler {
         //send a LOAD_GAME back to the client
         GameData game = getGameData(username, gameID);
         if (game == null) return;
+
+        if(gameOverHandler(game, username)){
+            return;
+        }
         connections.send(username,new LoadGameMessage(game));
 
         //tell all others in this game that someone connected, either as observer or player(including which color)
@@ -110,6 +114,29 @@ public class WebSocketHandler {
             game = gameService.findGameByID(gameID);
         } catch (Exception ex){
             connections.send(username, new ErrorMessage("An unknown error occurred finding the game"));
+            return;
+        }
+
+        if(gameOverHandler(game, username)){
+            return;
+        }
+
+        boolean isWhite = Objects.equals(game.whiteUsername(), username);
+        boolean isBlack = Objects.equals(game.blackUsername(), username);
+
+        if(!isWhite && !isBlack){
+            connections.send(username, new ErrorMessage("Observers cannot make moves"));
+            return;
+        }
+
+        var piece = game.game().getBoard().getPiece(move.getStartPosition());
+        if(piece == null){
+            connections.send(username, new ErrorMessage("No piece at that location"));
+            return;
+        }
+
+        if((piece.getTeamColor() == WHITE && !isWhite) || (piece.getTeamColor() == BLACK && !isBlack)){
+            connections.send(username, new ErrorMessage("You cannot move the other teams pieces"));
             return;
         }
 
@@ -159,6 +186,10 @@ public class WebSocketHandler {
             return;
         }
 
+        if(gameOverHandler(game, username)){
+            return;
+        }
+
         if(Objects.equals(game.whiteUsername(), username)){
             //update the game
             game.addWhiteUsername(null);
@@ -194,6 +225,10 @@ public class WebSocketHandler {
             return;
         }
 
+        if(gameOverHandler(game, username)){
+            return;
+        }
+
         if(!Objects.equals(game.whiteUsername(), username) && !Objects.equals(game.blackUsername(), username)){
             connections.send(username, new ErrorMessage("Observers cannot resign. Leave instead."));
             return;
@@ -212,10 +247,10 @@ public class WebSocketHandler {
 
         //notify everyone that they resigned
         if(Objects.equals(game.whiteUsername(), username)) {
-            connections.broadcast(username, gameID, new NotificationMessage(username + " (White) has resigned"));
+            connections.broadcast(null, gameID, new NotificationMessage(username + " (White) has resigned"));
         }
         else if(Objects.equals(game.blackUsername(), username)){
-            connections.broadcast(username, gameID, new NotificationMessage(username + " (Black) has resigned"));
+            connections.broadcast(null, gameID, new NotificationMessage(username + " (Black) has resigned"));
         }
 
         connections.remove(username);
@@ -235,5 +270,12 @@ public class WebSocketHandler {
             return null;
         }
         return game;
+    }
+
+    private boolean gameOverHandler(GameData game, String username){
+        if(game.game().getIsGameOver()){
+            connections.send(username, new ErrorMessage("This game is over"));
+        }
+        return game.game().getIsGameOver();
     }
 }

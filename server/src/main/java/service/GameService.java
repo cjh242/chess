@@ -100,7 +100,7 @@ public class GameService {
         return gameDao.findByID(gameID);
     }
 
-    public void update(GameData game) throws DataAccessException {
-        gameDao.update(game);
+    public GameData update(GameData game) throws DataAccessException {
+        return gameDao.update(game);
     }
 }
