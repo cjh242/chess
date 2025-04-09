@@ -74,10 +74,6 @@ public class DatabaseAssistant {
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
-//
-//                if(rowsAffected > 0){
-//                    conn.commit();
-//                }
 
                 return rowsAffected;
             }

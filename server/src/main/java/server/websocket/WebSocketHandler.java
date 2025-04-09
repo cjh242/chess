@@ -88,7 +88,9 @@ public class WebSocketHandler {
     private void connect(String username, int gameID){
         //send a LOAD_GAME back to the client
         GameData game = getGameData(username, gameID);
-        if (game == null) return;
+        if (game == null){
+            return;
+        }
 
         if(gameOverHandler(game, username)){
             return;

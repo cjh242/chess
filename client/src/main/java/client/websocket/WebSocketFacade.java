@@ -66,9 +66,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void connect(String authToken, int gameID){
+    public void command(String authToken, int gameID, UserGameCommand.CommandType type){
         try{
-            var command = new UserGameCommand(CONNECT, authToken, gameID);
+            var command = new UserGameCommand(type, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception ex){
             System.out.println("Error connecting to server");
@@ -78,24 +78,6 @@ public class WebSocketFacade extends Endpoint {
     public void makeMove(String authToken, int gameID, ChessMove move){
         try{
             var command = new MakeMoveCommand(authToken, gameID, move);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-        } catch (Exception ex){
-            System.out.println("Error connecting to server");
-        }
-    }
-
-    public void leave(String authToken, int gameID){
-        try{
-            var command = new UserGameCommand(LEAVE, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-        } catch (Exception ex){
-            System.out.println("Error connecting to server");
-        }
-    }
-
-    public void resign(String authToken, int gameID){
-        try{
-            var command = new UserGameCommand(RESIGN, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception ex){
             System.out.println("Error connecting to server");

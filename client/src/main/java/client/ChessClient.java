@@ -18,6 +18,7 @@ import java.util.Scanner;
 
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
+import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class ChessClient {
 
@@ -149,7 +150,7 @@ public class ChessClient {
         if(!isInGameplay){
             System.out.println("Must be in a game to leave");
         }
-        ws.leave(authToken, gameID);
+        ws.command(authToken, gameID, LEAVE);
         perspective = WHITE;
         System.out.println("You have left the game");
     }
@@ -168,7 +169,8 @@ public class ChessClient {
             return;
         }
         if(parts.length != 3 && parts.length != 4){
-            System.out.println("Usage: move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> [OPTIONAL_PROMOTION_PIECE]- a piece at a location to a provided location, if valid");
+            System.out.println("Usage: move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> [OPTIONAL_PROMOTION_PIECE]- " +
+                    "a piece at a location to a provided location, if valid");
             return;
         }
 
@@ -256,7 +258,7 @@ public class ChessClient {
         if(isObserving){
             System.out.println("Observers cannot resign");
         }
-        ws.resign(authToken, gameID);
+        ws.command(authToken, gameID, RESIGN);
         perspective = WHITE;
     }
 
@@ -310,7 +312,8 @@ public class ChessClient {
         if(isInGameplay){
             System.out.println("  redraw - the board");
             System.out.println("  leave - the game");
-            System.out.println("  move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> [OPTIONAL_PROMOTION_PIECE]- a piece at a location to a provided location, if valid");
+            System.out.println("  move <PIECE_STARTING_LOCATION> <PIECE_ENDING_LOCATION> [OPTIONAL_PROMOTION_PIECE]- " +
+                    "a piece at a location to a provided location, if valid");
             System.out.println("  resign - the game as a loss");
             System.out.println("  highlight <PIECE_LOCATION> - the valid moves for a piece at a location");
         }
@@ -427,7 +430,7 @@ public class ChessClient {
             int gameNumber = Integer.parseInt(parts[1]);
             var game = games.get(gameNumber);
             ws = new WebSocketFacade(port, notificationCentral, WHITE);
-            ws.connect(authToken, game.gameID());
+            ws.command(authToken, game.gameID(), CONNECT);
             gameID = game.gameID();
         } catch (Exception ex) {
             System.out.println("Failed to observe game");
@@ -455,7 +458,7 @@ public class ChessClient {
             var result = server.playGame(new JoinGameRequest(teamColor, game.gameID(), authToken));
             System.out.println(result.message());
             ws = new WebSocketFacade(port, notificationCentral, teamColor);
-            ws.connect(authToken, game.gameID());
+            ws.command(authToken, game.gameID(), CONNECT);
             gameID = game.gameID();
         } catch (NumberFormatException ex) {
             System.out.println("<ID> Must be a number");

@@ -27,12 +27,7 @@ public class PrintingHelper {
         boolean isWhitePerspective = (perspective == ChessGame.TeamColor.WHITE);
 
         // Column labels
-        System.out.print(" \u2003 ");
-        if (isWhitePerspective) {
-            System.out.println("a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h");
-        } else {
-            System.out.println("h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a");
-        }
+        printColumnLabels(isWhitePerspective);
 
         for (int row = (isWhitePerspective ? 8 : 1);
              isWhitePerspective ? row >= 1 : row <= 8;
@@ -60,12 +55,7 @@ public class PrintingHelper {
         }
 
         // Column labels again
-        System.out.print(" \u2003 ");
-        if (isWhitePerspective) {
-            System.out.println("a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h");
-        } else {
-            System.out.println("h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a");
-        }
+        printColumnLabels(isWhitePerspective);
     }
 
     public static void printBoard(ChessBoard board, ChessGame.TeamColor perspective, List<ChessPosition> toHighlight) {
@@ -75,12 +65,7 @@ public class PrintingHelper {
         boolean isWhitePerspective = (perspective == ChessGame.TeamColor.WHITE);
 
         // Column labels
-        System.out.print(" \u2003 ");
-        if (isWhitePerspective) {
-            System.out.println("a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h");
-        } else {
-            System.out.println("h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a");
-        }
+        printColumnLabels(isWhitePerspective);
 
         for (int row = (isWhitePerspective ? 8 : 1);
              isWhitePerspective ? row >= 1 : row <= 8;
@@ -112,6 +97,10 @@ public class PrintingHelper {
         }
 
         // Column labels again
+        printColumnLabels(isWhitePerspective);
+    }
+
+    private static void printColumnLabels(boolean isWhitePerspective){
         System.out.print(" \u2003 ");
         if (isWhitePerspective) {
             System.out.println("a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h");
